@@ -1,0 +1,34 @@
+﻿@using daco3.Models
+
+@{
+    Layout = null;
+}
+@model DatabazaModel
+
+<div style="display:block">
+  @using (Html.BeginForm("Submit","Login"))
+  {
+
+        @Html.Label("lblLogin","Sem napis blbby login");
+        @Html.TextBoxFor(m=> m.Meno);
+    <div>
+        @Html.Label("lblHeslo","Sem napis blbe heslo");
+        @Html.PasswordFor(m => m.Heslo, new { @class = "hovno" });
+    </div>
+
+    <div>
+        <input type="submit" value="Login" />
+        <p>@ViewBag.Err</p>
+    </div>
+ 
+  }  
+  </div>
+
+<style>
+  .hovno{
+    height:50px;
+    border-radius:25px;
+    width:250px;
+    background-color:red;
+  }
+</style>

@@ -1,0 +1,55 @@
+﻿@using daco3.Models
+@{
+    ViewBag.Title = "Zaznami";
+    Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
+}
+@model DatabazaModel
+
+<body>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th >Meno</th>
+                <th >Datum</th>
+                <th>Cas</th>
+                <th>Typ</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model.Data)
+            {
+                <tr>
+                    <td>@item.Meno</td>
+                    <td>@item.Datum</td>
+                    <td>@item.Cas</td>
+                    <td>@item.Typ</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+</body>
+<style>
+
+    table,td{
+        border:1px solid #ccc;
+    }
+    table{
+        text-align: center;
+        table-layout: auto;
+        border-collapse: collapse;
+        margin-top: 100px;
+    }
+    th {
+    text-align:center;
+    }
+    body {
+    background-color:azure;
+    }
+
+    
+</style> 
+
+

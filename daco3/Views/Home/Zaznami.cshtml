@@ -1,59 +1,48 @@
-﻿@using daco3.Models
-
+﻿@using daco3.Models;
+@using PagedList;
+@using PagedList.Mvc;
 @{
     ViewBag.Title = "Zaznami";
     Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
+    var grid = new WebGrid(canPage: true, rowsPerPage: 10);
+    grid.Bind(source: Model, rowCount: ViewBag.TotalRow, autoSortAndPage: false);
 }
-@model Tabulka
+
+
+@*/ @model Tabulka /*@
+@model IPagedList<GridTabulka>
+
+
 <style>
-
-    table, td {
-        border: 1px solid #ccc;
-    }
-
-    table {
-        text-align: center;
-        table-layout: auto;
-        border-collapse: collapse;
+    #table {
         margin-top: 100px;
     }
-
-    th {
-        text-align: center;
-    }
-
-    body {
-        background-color: azure;
-    }
-</style>
-
-
+</style>>
 
 
 <body>
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th>Meno</th>
-                <th>Datum</th>
-                <th>Cas</th>
-                <th>Typ</th>
-            </tr>
-        </thead>
-        <tbody>
 
-            @foreach (var item in Model.tableZaznami)
-            {
+    <div id="table">
+        @grid.Table(
+                   tableStyle: "table table-responsive table-bordered table-hover",
+                   columns: grid.Columns(
+                         grid.Column(columnName: "Meno", header: "Meno"),
+                         grid.Column(columnName: "Datum", header: "Datum"),
+                         grid.Column(columnName: "Cas", header: "Cas"),
+                         grid.Column(columnName: "Typ", header: "Typ")
+                             )
+                        )
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            @Html.PagedListPager(Model,page => Url.Action("Zaznami",new { page}))
+        </div>
 
-                <tr>
-                    <td>@item.Uzivatel.Username</td>
-                    <td>@item.Cas.ToString("dd.MM.yyyy")</td>
-                    <td>@item.Cas.ToString("HH:mm")</td>
-                    <td>@item.Typ</td>
-                </tr>
-            }
-        </tbody>
+    </div>
 
-    </table>
+    @Html.Hidden("dir", grid.SortDirection)
+    @Html.Hidden("col", grid.SortColumn)
+
+
 
 </body>

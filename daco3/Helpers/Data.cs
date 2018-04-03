@@ -8,6 +8,8 @@ using System.Text;
 using System.Linq;
 using daco3.Models;
 using System.Diagnostics;
+using System.Globalization;
+using System.Threading;
 
 namespace daco3.Helpers
 {
@@ -79,9 +81,7 @@ namespace daco3.Helpers
             if (datum.Equals("")) datum = webPage.DocumentNode.SelectNodes("/html/body/div/div/div[3]/div[2]/div/div/div/div/div/div[1]/div/div[1]/div/span[1]")[0].InnerText;
             datum = FormatujDatum(datum);
 
-            
-            var today = DateTime.Now.Date;
-            Trace.TraceInformation("Vsetky zaznami"+vsetkyZaznamy.Count);
+            Trace.TraceInformation("Vsetky zaznami: "+vsetkyZaznamy.Count);
             var db = new Databaza();
             for (int i = vsetkyZaznamy.Count-1; i >= 0; i--)
             {
@@ -92,22 +92,20 @@ namespace daco3.Helpers
                 var check = db.Zaznami.Any(z => z.ZaznamIdWeb == IdZaznamu);
                 Trace.TraceInformation($"Existuje zaznam? {check}");
                 if (!check) {
-                    Trace.TraceInformation("Originalny Zaznam");
-
+                    Trace.TraceInformation("Vkladanie zaznamu");
                     var meno = vsetkyZaznamy[i].SelectNodes(".//div[contains(@class, 'name')]")[0].InnerText;
                     var time = vsetkyZaznamy[i].SelectNodes(".//div[contains(@class, 'time')]")[0].InnerText.Replace(" ", "");
-                    var cas = DateTime.Parse(datum + " "+time);
-
+                    Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
+                    var cas = DateTime.Parse(datum + " "+time,CultureInfo.CurrentCulture);
+                    
                     if (db.Uzivatelia.Where(u => u.Username == meno).FirstOrDefault() == null)
                     {
-                        Trace.TraceInformation("NEnasla sa zhoda s osobou");
                         db.Uzivatelia.Add(new Uzivatel() { Heslo = "heslo", Username = meno, RolaId = 2});
                         db.SaveChanges();
                     }
                     var predchadzajuci = db.Zaznami.Where(z => z.Uzivatel.Username == meno).OrderByDescending(z => z.Cas).FirstOrDefault();
                     if (predchadzajuci == null)
                     {
-                        Trace.TraceInformation("Vlozenie na zaklade predchadzajuceho");
                         var zaznamUzivatel = db.Uzivatelia.Where(m => m.Username == meno).FirstOrDefault().UzivatelId;
                         db.Zaznami.Add(new Zaznam() { Cas = cas, Typ = "P", UzivatelId = zaznamUzivatel, ZaznamIdWeb = IdZaznamu });
                         db.SaveChanges();
@@ -116,13 +114,12 @@ namespace daco3.Helpers
                         var typ = predchadzajuci.Typ == "O" ? "P" : "O";
                         db.Zaznami.Add(new Zaznam() { Cas = cas, Typ = typ, UzivatelId = predchadzajuci.UzivatelId, ZaznamIdWeb = IdZaznamu });
                         db.SaveChanges();
-                    } else /*if (predchadzajuci.Cas.Day == today.Day && predchadzajuci.Cas.Month == today.Month && predchadzajuci.Cas.Year == today.Year)*/
+                    } else
                     {//ak je predchadzajuci z ineho dna tak zacinam prichodom
                         var typ = "P";
                         db.Zaznami.Add(new Zaznam() { Cas = cas, Typ = typ, UzivatelId = predchadzajuci.UzivatelId, ZaznamIdWeb = IdZaznamu });
                         db.SaveChanges();
                     }
-                    Trace.TraceInformation("Koniec Cyklu");
                 }
             }
             Trace.TraceInformation("Skoncil Parsing");

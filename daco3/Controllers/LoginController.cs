@@ -74,11 +74,6 @@ namespace daco3.Controllers
         }
         public ActionResult StartupVlakno()
         {
-            //Trace.TraceInformation("Som za prvym");
-            //Thread t = new Thread(zbierajData);
-            //Trace.TraceInformation("Starting thread");
-            //t.Start();
-          
             return Json("ok",JsonRequestBehavior.AllowGet);
         }
         

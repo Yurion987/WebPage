@@ -3,32 +3,61 @@
 @{
     Layout = null;
 }
-@model DatabazaModel
+@model LoginClass
+
+
 
 <div style="display:block">
-  @using (Html.BeginForm("Submit","Login"))
-  {
+    @using (Html.BeginForm("Submit", "Login"))
+    {
+        @Html.Label("sadf", "Posledna verzia co existuje");
+        @Html.Label("lblLogin", "Sem napis blbby login");
+        @Html.TextBoxFor(l => l.Meno);
+        <div>
+            @Html.Label("lblHeslo", "Sem napis blbe heslo");
+            @Html.PasswordFor(m => m.Heslo, new { @class = "hovno" });
+        </div>
 
-        @Html.Label("lblLogin","Sem napis blbby login");
-        @Html.TextBoxFor(m=> m.Meno);
-    <div>
-        @Html.Label("lblHeslo","Sem napis blbe heslo");
-        @Html.PasswordFor(m => m.Heslo, new { @class = "hovno" });
-    </div>
+        <div>
+            <input type="submit" value="Login" />
+            <p>@ViewBag.Err</p>
+        </div>
 
-    <div>
-        <input type="submit" value="Login" />
-        <p>@ViewBag.Err</p>
-    </div>
- 
-  }  
-  </div>
+    }
+</div>
+
+<input id="vlakno" type="button" value="vlakno">
+
+<script src="~/Scripts/jquery-3.0.0.min.js"></script>
+<script src="~/Scripts/jquery-3.0.0.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+<script>
+    
+    $(document).ready(function () {
+        $('#vlakno').on("click", startUpValk);
+    });
+
+
+    function startUpValk(event) {
+        var serviceURL = '/Login/StartupVlakno';
+        $.ajax({
+            type: "POST",
+            url: serviceURL,
+            success: function (data) {
+                if (data == "ok")
+                    console.log("fasa");
+            },
+        });
+    }
+
+</script>
+
 
 <style>
-  .hovno{
-    height:50px;
-    border-radius:25px;
-    width:250px;
-    background-color:red;
-  }
+    .hovno {
+        height: 50px;
+        border-radius: 25px;
+        width: 250px;
+        background-color: red;
+    }
 </style>

@@ -1,9 +1,7 @@
-﻿@using daco3.Models
+﻿
 @{
     Layout = null;
 }
-
-@model DatabazaModel
 
 <!DOCTYPE html>
 <html>
@@ -32,17 +30,16 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">WebSiteName</a>
+                <a class="navbar-brand" href="@Url.Action("Index","Home")">Home</a>
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="@Url.Action("Zaznami","Home",Model)">Zaznami</a></li>
-                    <li><a href="#">Page 2</a></li>
-                    <li><a href="#">Page 3</a></li>
+                    <li><a href="@Url.Action("Zaznami","Home")">Zaznami</a></li>
+                  @* <li><a href="#">Page 2</a></li>
+                    <li><a href="#">Page 3</a></li>*@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#"><span class="glyphicon glyphicon-user"></span>@Model.Meno</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-user">@User.Identity.Name</span></a></li>
                 </ul>
             </div>
         </div>

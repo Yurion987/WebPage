@@ -7,25 +7,24 @@ using System.Web;
 
 namespace daco3.Models
 {
-    [Table("Zaznam")]
-    public class Zaznam
+    [Table("Log")]
+    public class Log
     {
         [Key]
+        public int LogId { get; set; }
+
+        
         public long ZaznamId { get; set; }
-
-        public string ZaznamIdWeb { get; set; }
-
-        [Required]
-        public DateTime Cas { get; set; }
 
         
         public int UzivatelId { get; set; }
 
-        [Required]
-        [StringLength(1)]
-        public string Typ { get; set; }
+        public DateTime StaraHodnota { get; set; }
+        public bool ZmenaTypu { get; set; }
 
         [ForeignKey("UzivatelId")]
         public Uzivatel Uzivatel { get; set; }
+        [ForeignKey("ZaznamId")]
+        public Zaznam Zaznam { get; set; }
     }
 }

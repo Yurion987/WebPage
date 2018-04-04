@@ -23,6 +23,6 @@ namespace daco3.Models
         public int RolaId { get; set; }
 
         [ForeignKey("RolaId")]
-        public Rola Rola { get; set; }
+        public virtual Rola Rola { get; set; }
     }
 }

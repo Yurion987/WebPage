@@ -26,6 +26,6 @@ namespace daco3.Models
         public string Typ { get; set; }
 
         [ForeignKey("UzivatelId")]
-        public Uzivatel Uzivatel { get; set; }
+        public virtual Uzivatel Uzivatel { get; set; }
     }
 }

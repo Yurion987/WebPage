@@ -30,30 +30,47 @@ namespace daco3.Controllers
             return View();
         }
         [Authorize]
-        public ActionResult Zaznami(int? page ,string sort="ZaznamId", string sortdir="desc")
+        public ActionResult Zaznami(int? page ,string sort="Datum", string sortdir="desc")
         {
-
-            var v = (from a in db.Zaznami
+            
+            var v = (from c in db.Zaznami
                      where
-                            a.ZaznamId != 0
-                     select a);
-
-            // todo sprav sortovanie podla mena a nie ID ked na to klikne 
-            if (sort.Equals("Datum")) sort = "Cas";
-            if (sort.Equals("Meno")) sort = "UzivatelId";
-            v = v.OrderBy(sort + " " + sortdir);
+                            c.ZaznamId != 0
+                     select new {c.Cas,c.Uzivatel.Username,c.ZaznamId});
 
             
-            List<GridTabulka> gt = new List<GridTabulka>();
-            foreach (var item in v)
+            if (sort.Equals("Datum")) sort = "Cas";
+            if (sort.Equals("Meno")) sort = "Username";
+            v = v.OrderBy(sort + " " + sortdir);
+            var list = v.ToList();
+
+            for (int i = 0; i < list.Count; i++)
             {
-                var meno = db.Uzivatelia.Where(z => z.UzivatelId == item.UzivatelId).FirstOrDefault().Username;
-                gt.Add(new GridTabulka(item.Cas, item.Typ, meno));
+                var meno = list[i].Username;
+                var cas = list[i].Cas.ToString("dd.MM.yyyy");
+
+                for (int j = i+1; j < list.Count; j++)
+                {
+                    if (list[j].Username == meno && cas == list[j].Cas.ToString("dd.MM.yyyy")) {
+                        list.RemoveAt(j);
+                        j--;
+                    }
+                }
             }
-             var pagedList = gt.ToPagedList(page ?? 1,15);
+
+            ;
+            List<GridTabulka> gt = new List<GridTabulka>();
+            foreach (var item in list)
+            {
+                gt.Add(new GridTabulka(item.Cas, item.Username,item.ZaznamId));
+            }
+             var pagedList = gt.ToPagedList(page ?? 1,10);
              ViewBag.TotalRow = pagedList.Count;
              return View(pagedList);
+        }
+        public ActionResult ZaznamPodrobne(int id) {
 
+            return View();
         }
         
     }

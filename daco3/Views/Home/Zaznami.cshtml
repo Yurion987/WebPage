@@ -1,6 +1,7 @@
 ﻿@using daco3.Models;
 @using PagedList;
 @using PagedList.Mvc;
+@using System.Linq;
 @{
     ViewBag.Title = "Zaznami";
     Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
@@ -23,25 +24,25 @@
 <body>
 
     <div id="table">
-        @grid.Table(
-                   tableStyle: "table table-responsive table-bordered table-hover",
-                   columns: grid.Columns(
-                         grid.Column(columnName: "Meno", header: "Meno"),
-                         grid.Column(columnName: "Datum", header: "Datum"),
-                         grid.Column(columnName: "Cas", header: "Cas"),
-                         grid.Column(columnName: "Typ", header: "Typ")
-                             )
-                        )
+        @grid.GetHtml(
+               tableStyle: "table table-responsive table-bordered table-hover",
+               columns: grid.Columns(
+                        grid.Column(columnName: "Meno", header: "Meno"),
+                        grid.Column(columnName: "Datum", header: "Datum"),
+                        grid.Column(format: (item) => Html.ActionLink("Info", "ZaznamPodrobne","Home", new { id = item.ZaznamId },null))
+                                     )
+
+                      )
+
     </div>
     <div class="row">
         <div class="col-sm-6">
-            @Html.PagedListPager(Model,page => Url.Action("Zaznami",new { page}))
+            @Html.PagedListPager(Model, page => Url.Action("Zaznami", new { page }))
         </div>
 
     </div>
 
-    @Html.Hidden("dir", grid.SortDirection)
-    @Html.Hidden("col", grid.SortColumn)
+
 
 
 

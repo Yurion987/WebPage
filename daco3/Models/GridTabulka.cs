@@ -10,15 +10,13 @@ namespace daco3.Models
         public string Datum { get; set; }
         public string Cas { get; set; }
 
-        public string Typ { get; set; }
-
         public string Meno { get; set; }
-
-        public GridTabulka(DateTime cas, string typ, string meno)
+        public long ZaznamId { get; set; }
+        public GridTabulka(DateTime cas , string meno,long zaznamId)
         {
+            this.ZaznamId = zaznamId;
             this.Cas = cas.ToString("HH:mm");
             this.Datum = cas.ToString("dd.MM.yyyy");
-            this.Typ = typ;
             this.Meno = meno;
         }
 

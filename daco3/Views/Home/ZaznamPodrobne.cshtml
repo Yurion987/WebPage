@@ -1,8 +1,68 @@
-﻿
+﻿@using daco3.Models;
 @{
     ViewBag.Title = "ZaznamPodrobne";
     Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
+    var grid = new WebGrid(canPage: false, rowsPerPage: 15);
+    grid.Bind(source: Model, rowCount: ViewBag.TotalRowSingleDay, autoSortAndPage: false);
 }
 
-<h2>ZaznamPodrobne</h2>
+@model List<GridTabulka>
+<style>
+    #table {
+        margin-top: 100px;
+    }
+    .table td {
+        width:25%;
+    }
+</style>>
+<div id="table" class="row">
+    @grid.GetHtml(
+                                         tableStyle: "table table-responsive table-bordered table-hover",
+                                         columns: grid.Columns(
+                                                                  grid.Column(columnName: "Meno", header: "Meno"),
+                                                                  grid.Column(columnName: "Datum", header: "Datum"),
+                                                                  grid.Column(columnName: "Cas", header: "Cas"),
+                                                                  grid.Column(header: "Typ", format: @<text> <div class="edit" data-id="@item.ZaznamId" data-propertyname="Typ">@item.Typ</div>  </text>))
+                                                                               )
+</div>
 
+<script src="~/Scripts/jquery-3.0.0.min.js"></script>
+<script src="~/Scripts/jquery-3.0.0.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+@section scripts{
+    <script src="https://www.appelsiini.net/download/jquery.jeditable.js"></script>
+    <script src="~/Scripts/jquery.jeditable.datepicker.js"></script>
+    
+    <script>
+       
+        $(document).ready(function () {
+           
+            var oldValue = '';
+            $('.edit').editable('/home/save', {
+                cssClass: 'jeditForm',
+                width: 'none',
+                height: 'none',
+                onsubmit: function (settings, original) {
+                    oldValue = original.revert;
+                },
+                submitdata: function () {
+                    return {
+                        id: $(this).data('id'),
+                        PropertyName: $(this).data('propertyname')
+                    }
+                },
+                callback: function (value, settings) {
+                    var jsonData = $.parseJSON(value);
+                    if (jsonData.status) {
+                        $(this).text(jsonData.value);
+                    } else {
+                        $(this).text(oldValue);
+                        alert(jsonData.message);
+                    }
+
+                }
+            })
+        });
+
+    </script>
+}

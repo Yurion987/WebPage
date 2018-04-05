@@ -20,6 +20,8 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+
+
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -30,13 +32,13 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="@Url.Action("Index","Home")">Home</a>
+                <a class="navbar-brand" href="@Url.Action("Index","Home")"><span class="glyphicon glyphicon-home"></span></a>
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
                     <li><a href="@Url.Action("Zaznami","Home")">Zaznami</a></li>
-                  @* <li><a href="#">Page 2</a></li>
-                    <li><a href="#">Page 3</a></li>*@
+                    @* <li><a href="#">Page 2</a></li>
+                        <li><a href="#">Page 3</a></li>*@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#"><span class="glyphicon glyphicon-user">@User.Identity.Name</span></a></li>
@@ -47,7 +49,6 @@
     <div class="container body-content">
         @RenderBody()
     </div>
-
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
@@ -66,6 +67,7 @@
     </environment>
 
     @RenderSection("scripts", required: false)
+
 </body>
 </html>
 

@@ -10,6 +10,7 @@ using daco3.Models;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
+using System.Security.Cryptography;
 
 namespace daco3.Helpers
 {
@@ -77,7 +78,7 @@ namespace daco3.Helpers
             }
             Trace.TraceInformation("Na stranke");
             var vsetkyZaznamy = webPage.DocumentNode.SelectSingleNode("//*[@id='timeline']").SelectNodes(".//li[contains(@class, 'ON')]");
-            string datum = webPage.DocumentNode.SelectSingleNode("/ html/body/div/div/div[3]/div[2]/div/div/div/div/div/div[1]/div/div[1]/div/span[2]").InnerText;
+            string datum = webPage.DocumentNode.SelectSingleNode("/html/body/div/div/div[3]/div[2]/div/div/div/div/div/div[1]/div/div[1]/div/span[2]").InnerText;
             if (datum.Equals("")) datum = webPage.DocumentNode.SelectNodes("/html/body/div/div/div[3]/div[2]/div/div/div/div/div/div[1]/div/div[1]/div/span[1]")[0].InnerText;
             datum = FormatujDatum(datum);
 
@@ -100,7 +101,8 @@ namespace daco3.Helpers
                     
                     if (db.Uzivatelia.Where(u => u.Username == meno).FirstOrDefault() == null)
                     {
-                        db.Uzivatelia.Add(new Uzivatel() { Heslo = "heslo", Username = meno, RolaId = 2});
+
+                        db.Uzivatelia.Add(new Uzivatel() { Heslo =Hash.ZaHashuj("heslo"), Username = meno, RolaId = 2});
                         db.SaveChanges();
                     }
                     var predchadzajuci = db.Zaznami.Where(z => z.Uzivatel.Username == meno).OrderByDescending(z => z.Cas).FirstOrDefault();
@@ -115,7 +117,7 @@ namespace daco3.Helpers
                         db.Zaznami.Add(new Zaznam() { Cas = cas, Typ = typ, UzivatelId = predchadzajuci.UzivatelId, ZaznamIdWeb = IdZaznamu });
                         db.SaveChanges();
                     } else
-                    {//ak je predchadzajuci z ineho dna tak zacinam prichodom
+                    {
                         var typ = "P";
                         db.Zaznami.Add(new Zaznam() { Cas = cas, Typ = typ, UzivatelId = predchadzajuci.UzivatelId, ZaznamIdWeb = IdZaznamu });
                         db.SaveChanges();
@@ -195,6 +197,8 @@ namespace daco3.Helpers
             }
             return celyDatum;
         }
+
+    
     }
     public class CookieAwareWebClient : WebClient
     {

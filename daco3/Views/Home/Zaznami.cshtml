@@ -8,7 +8,8 @@
     var grid = new WebGrid(canPage: true, rowsPerPage: 15);
     grid.Bind(source: Model, rowCount: ViewBag.TotalRow, autoSortAndPage: false);
 }
-
+<link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
 
 @model IPagedList<GridTabulka>
 
@@ -21,20 +22,33 @@
 
 
 <body>
-    
     <div id="table">
+        @using (Html.BeginForm("Zaznami", "Home"))
+        {
+        <div class="col-md-10">
+            @Html.Label("Meno")
+            @Html.TextBox("userName", null, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.Label("Datum od kedy")
+            @Html.TextBox("zaznamCasOd", "", new { @readonly = "readonly", @class = "datumPick" })
+            @Html.Label("Datum do kedy")
+            @Html.TextBox("zaznamCasDo", DateTime.Now.Date.ToShortDateString(), new { @readonly = "readonly", @class = "datumPick" })
+
+            <input type="submit" value="Hladaj" />
+
+        </div>
+        }
+
         @grid.GetHtml(
                       tableStyle: "table table-responsive table-bordered table-hover",
                       columns: grid.Columns(
-                               grid.Column(columnName: "Meno", header: "Meno"),
-                               grid.Column(columnName: "Datum", header: "Datum"),
-                               grid.Column(columnName: "Odpracovane", header: "Odpracovane"),
-                               grid.Column(header: "Podrobne", format: (item) => Html.ActionLink("⇨", "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null))
-                                             )
+                                           grid.Column(columnName: "Meno", header: "Meno"),
+                                           grid.Column(columnName: "Datum", header: "Datum"),
+                                           grid.Column(header: "Odpracovane", format: @<text>@item.Odpracovane </text>)
+                                           )
 
-                              )
-
+                     )
     </div>
+        
     <div class="row">
         <div class="col-sm-6">
             @Html.PagedListPager(Model, page => Url.Action("Zaznami", new { page }))
@@ -43,7 +57,36 @@
     </div>
 
 
-
+        
 
 
 </body>
+
+
+@section scripts{
+
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+
+    <script>
+
+
+        $(document).ready(function () {
+            //kalendar styl
+            $('.datumPick').datepicker({
+                dayNamesMin: ["Po", "Ut", "Str", "Stv", "Pi", "So", "Ne"],
+                dayNames: ["Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota", "Nedela"],
+                monthNames: ["Január", "Február", "Marec", "Apríl", "Máj", "Jún", "Júl", "August", "September", "Október", "November", "December"],
+                dateFormat: 'dd.mm.yy',
+                controlType: 'select',
+                autoclose:true
+
+            });
+            //autocompelte
+            $('#userName').autocomplete({
+                source: '/Home/CompleteName'
+            });
+
+
+        });
+    </script>
+}

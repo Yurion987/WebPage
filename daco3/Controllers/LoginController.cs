@@ -28,9 +28,9 @@ namespace daco3.Controllers
 
         public ActionResult Index()
         {
-            //zavolam db
-            //nieco selectnem
-            //a vyrobim model
+
+     
+            db.SaveChanges();
             var loginData = new LoginClass();
             ViewBag.Err = "";
             return View(loginData);
@@ -38,18 +38,10 @@ namespace daco3.Controllers
 
         public ActionResult Submit(LoginClass model)
         {
-            //zavolam DB ci som validny
 
-            var a = ConfigurationManager.AppSettings["dbCon"];
-            /* 
-             var c= db.Zaznami.Where(b => b.UzivatelId == 1)
-                 .Select(s => new LoginClass { Heslo = s.Typ, Meno = s.ZaznamIdWeb })
-                 .ToList();
-              */
-
-            //todo:zahashuj heslo
-            var user = this.db.Uzivatelia.FirstOrDefault(u => u.Username == model.Meno
-            && model.Heslo == u.Heslo);
+            var heslo = Hash.ZaHashuj(model.Heslo);
+            var user = db.Uzivatelia.FirstOrDefault(u => u.Username == model.Meno
+            && heslo == u.Heslo);
 
             if (user != null)
             {
@@ -64,6 +56,7 @@ namespace daco3.Controllers
                          userData);
                 string encTicket = FormsAuthentication.Encrypt(authTicket);
                 HttpCookie faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
+                faCookie.Expires = DateTime.Now.AddDays(1);
                 Response.Cookies.Add(faCookie);
 
 

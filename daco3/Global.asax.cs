@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Mvc.Filters;
 using System.Web.Routing;
 using System.Web.Script.Serialization;
 using System.Web.Security;
@@ -36,6 +37,7 @@ namespace daco3
             t.Start();
         }
 
+
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
         {
             HttpCookie authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
@@ -49,6 +51,13 @@ namespace daco3
                 MojPrincipal newUser = new MojPrincipal(serializeModel);
 
                 HttpContext.Current.User = newUser;
+            }
+            else
+            {
+                if (Request.Url.AbsolutePath.Contains("Home"))
+                {
+                    // redirect to unauthorize
+                }
             }
         }
     }

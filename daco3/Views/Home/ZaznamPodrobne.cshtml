@@ -6,37 +6,102 @@
     grid.Bind(source: Model, rowCount: ViewBag.TotalRowSingleDay, autoSortAndPage: false);
 }
 
+<link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+
 @model List<GridTabulka>
 <style>
     #table {
         margin-top: 100px;
     }
+
     .table td {
-        width:25%;
+        width: 25%;
     }
-</style>>
+</style>
+
+
 <div id="table" class="row">
-    @grid.GetHtml(
-                                         tableStyle: "table table-responsive table-bordered table-hover",
-                                         columns: grid.Columns(
-                                                                  grid.Column(columnName: "Meno", header: "Meno"),
-                                                                  grid.Column(columnName: "Datum", header: "Datum"),
-                                                                  grid.Column(columnName: "Cas", header: "Cas"),
-                                                                  grid.Column(header: "Typ", format: @<text> <div class="edit" data-id="@item.ZaznamId" data-propertyname="Typ">@item.Typ</div>  </text>))
-                                                                               )
+   
+        <input type="button" id="opener" value="Novy Zaznam">
+        @grid.GetHtml(tableStyle: "table table-responsive table-bordered table-hover",
+                                                                                           columns: grid.Columns(
+                                                                                                      grid.Column(columnName: "Meno", header: "Meno"),
+                                                                                                      grid.Column(columnName: "Datum", header: "Datum"),
+                                                                                                      grid.Column(header: "Cas", format: @<text> <div data-id="@item.ZaznamId" data-propertyname="Cas">@item.Cas</div>  </text>),
+                                                                                                                                            grid.Column(header: "Typ", format: @<text> <div class="edit" data-id="@item.ZaznamId" data-propertyname="Typ">@item.Typ</div>  </text>))
+                                                                                                                                                                                                                                                                                                                      )
+    </div>
+
+
+
+<div id="dialog-modal" title="Formular">
+    @using (Ajax.BeginForm("NovyZaznam", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }))
+    {
+        <div>
+
+            <fieldset>
+
+                <h4>Uzivatel: @Model.Last().Meno </h4>
+                <h4>Den: @Model.Last().Datum </h4>
+
+                @Html.Hidden("zaznamId", Model.Last().ZaznamId)
+                <div class="editor-label">
+                    @Html.LabelFor(m => m.Last().Typ)
+                </div>
+                <div class="editor-label">
+                    @Html.DropDownList("zaznamTyp", new List<SelectListItem> {
+                                                                new SelectListItem {Text = "Odchod",Value="O" },
+                                                                new SelectListItem {Text = "Prichod",Value="P" }
+                                                              }, "Typ dochadzky")
+                </div>
+                <div class="editor-label">
+                    @Html.LabelFor(m => m.Last().Cas)
+                </div>
+                <div class="editor-label">
+                    @Html.TextBox("zaznamCas", "00:00", new { @class = "casPick" })
+                </div>
+
+                <input id="vytvorNovy" type="submit" value="Uloz" />
+            </fieldset>
+        </div>
+    }
 </div>
 
-<script src="~/Scripts/jquery-3.0.0.min.js"></script>
-<script src="~/Scripts/jquery-3.0.0.js"></script>
-<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
 @section scripts{
-    <script src="https://www.appelsiini.net/download/jquery.jeditable.js"></script>
     <script src="~/Scripts/jquery.jeditable.datepicker.js"></script>
-    
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
+    <script src="https://www.appelsiini.net/download/jquery.jeditable.js"></script>
+
+
     <script>
-       
+
+
+
+        function onSuccess(data) {
+            if (typeof data.nameError !== "undefined") {
+                if (!data.success) {
+                    alert(data.nameError);
+                } else {
+                    aler("zaznam uspesne pridany");
+                }
+            } else {
+                location.reload();
+            }
+        }
         $(document).ready(function () {
-           
+            //kalendar styl
+            $('.casPick').datetimepicker({
+                hourMin: 6,
+                hourMax: 17,
+                controlType: 'select',
+                timeOnly: true,
+                format: 'H:m'
+            });
+            //InLine Editing
             var oldValue = '';
             $('.edit').editable('/home/save', {
                 cssClass: 'jeditForm',
@@ -61,8 +126,31 @@
                     }
 
                 }
-            })
-        });
+            });
+            //Open Okno
+            $('#opener').click(function () {
+                $('#dialog-modal').dialog("open");
+            });
+            //styluj
+            $('#dialog-modal').dialog({
+                autoOpen: false,
+                height: 250,
+                width: 250,
+                modal: true,
+                show: {
+                    effect: "fold",
+                    duration: 500
+                },
+                hide: {
+                    effect: "explode",
+                    duration: 500
+                }
+            });
 
+            $('#vytvorNovy').click(function () {
+                $('#dialog-modal').dialog('close');
+            });
+
+        });
     </script>
 }

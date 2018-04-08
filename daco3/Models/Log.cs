@@ -19,12 +19,12 @@ namespace daco3.Models
         
         public int UzivatelId { get; set; }
 
-        public DateTime StaraHodnota { get; set; }
+        public DateTime? StaraHodnota { get; set; }
         public bool ZmenaTypu { get; set; }
 
         [ForeignKey("UzivatelId")]
-        public Uzivatel Uzivatel { get; set; }
+        public virtual Uzivatel Uzivatel { get; set; }
         [ForeignKey("ZaznamId")]
-        public Zaznam Zaznam { get; set; }
+        public virtual Zaznam Zaznam { get; set; }
     }
 }

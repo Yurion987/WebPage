@@ -17,7 +17,6 @@ namespace daco3.Models
         [StringLength(25)]
         public string Username { get; set; }
         [Required]
-        [StringLength(20)]
         public string Heslo { get; set; }
 
         public int RolaId { get; set; }

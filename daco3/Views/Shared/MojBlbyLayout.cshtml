@@ -10,6 +10,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Dochadzkovy System</title>
 
+    <script src="~/Scripts/jquery-3.0.0.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+
+
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
@@ -20,6 +24,7 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+
 
 
 </head>
@@ -36,12 +41,18 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li><a href="@Url.Action("Zaznami","Home")">Zaznami</a></li>
-                    @* <li><a href="#">Page 2</a></li>
-                        <li><a href="#">Page 3</a></li>*@
+                    <li><a href="@Url.Action("Zaznami","Home")">Zaznamy</a></li>
+                    @* <li><a href="#">Page 2</a></li>*@
+                    <li><a href="@Url.Action("ZaznamOpravy","Home")">Opravit Zaznamy</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#"><span class="glyphicon glyphicon-user">@User.Identity.Name</span></a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"> <span class="glyphicon glyphicon-user"> @User.Identity.Name</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("Settings","Home")"><span class="glyphicon glyphicon-cog"> Nastavenia</span></a></li>
+                            <li><a href="@Url.Action("Logout","Home")"><span class="glyphicon glyphicon-log-out"> Odhlasit</span></a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -65,13 +76,14 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
     @RenderSection("scripts", required: false)
 
 </body>
 </html>
 
 
+}
 
 
 

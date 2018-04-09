@@ -38,20 +38,20 @@
         </div>
         }
 
-        @grid.GetHtml(
-                      tableStyle: "table table-responsive table-bordered table-hover",
-                      columns: grid.Columns(
-                                           grid.Column(columnName: "Meno", header: "Meno"),
-                                           grid.Column(columnName: "Datum", header: "Datum"),
-                                           grid.Column(header: "Odpracovane", format: @<text>@item.Odpracovane </text>)
+            @grid.GetHtml(
+                          tableStyle: "table table-responsive table-bordered table-hover",
+                          columns: grid.Columns(
+                                               grid.Column(columnName: "Meno", header: "Meno"),
+                                               grid.Column(columnName: "Datum", header: "Datum"),
+                                               grid.Column(header: "Odpracovane", format: @<text>@item.Odpracovane </text>)
                                            )
 
                      )
     </div>
         
     <div class="row">
-        <div class="col-sm-6">
-            @Html.PagedListPager(Model, page => Url.Action("Zaznami", new { page }))
+        <div style=" width: auto" class="col-sm-6">
+            @Html.PagedListPager(Model, page =>  Url.Action("Zaznami", new { page }))
         </div>
 
     </div>

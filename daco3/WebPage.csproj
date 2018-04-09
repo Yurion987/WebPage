@@ -321,7 +321,7 @@
     <Content Include="Views\Home\Zaznami.cshtml" />
     <Content Include="Views\Home\ZaznamPodrobne.cshtml" />
     <Content Include="Views\Home\ZaznamOpravy.cshtml" />
-    <Content Include="Views\Home\Settings.cshtml" />
+    <Content Include="Views\Home\DochadzkaMesiac.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

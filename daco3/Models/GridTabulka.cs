@@ -13,6 +13,7 @@ namespace daco3.Models
         public string Meno { get; set; }
         public long ZaznamId { get; set; }
 
+        public string Mesiac { get; set; }
         public string Odpracovane { get; set; }
         public string Typ { get; set; }
         public GridTabulka(DateTime cas , string meno,long zaznamId,string odpracovane)
@@ -35,6 +36,12 @@ namespace daco3.Models
             this.ZaznamId = zaznamId;
             this.Typ = typ;
             this.Cas = cas;
+        }
+        public GridTabulka(string meno, string mesiac, string odpracovane)
+        {
+            this.Mesiac = mesiac;
+            this.Meno = meno;
+            this.Odpracovane = odpracovane;
         }
     }
 }

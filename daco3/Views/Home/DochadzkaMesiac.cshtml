@@ -1,0 +1,112 @@
+﻿@using daco3.Models;
+@using PagedList;
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "DochadzkaMesiac";
+    Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
+    var grid = new WebGrid(canPage: false, rowsPerPage: 15);
+    grid.Bind(source: Model, rowCount: ViewBag.TotalRowMesacne, autoSortAndPage: false);
+
+}
+
+<link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+
+@model IPagedList<GridTabulka>
+<style>
+
+    .ui-datepicker-month {
+        display: none;
+    }
+    .ui-datepicker-calendar {
+        display: none;
+    }
+
+    #table {
+        margin-top: 100px;
+    }
+
+    .table td {
+        width: 25%;
+    }
+
+    h1 {
+        margin-top: 100px;
+    }
+</style>
+
+
+<div id="table" class="row">
+
+    @using (Html.BeginForm("DochadzkaMesiac", "Home"))
+    {
+        <div class="col-md-10">
+            @Html.Label("Meno")
+            @Html.TextBox("menoZamestnanca", null, new { htmlAttributes = new { @class = "form-control" } })
+
+            @Html.DropDownList("mesiac", new List<SelectListItem> {
+            new SelectListItem {Text = "Január",Value="Január" },
+            new SelectListItem {Text = "Február",Value="Február" },
+            new SelectListItem {Text = "Marec",Value="Marec" },
+            new SelectListItem {Text = "Apríl",Value="Apríl" },
+            new SelectListItem {Text = "Máj",Value="Máj" },
+            new SelectListItem {Text = "Jún",Value="Jún" },
+            new SelectListItem {Text = "Júl",Value="Júl" },
+            new SelectListItem {Text = "August",Value="August" },
+            new SelectListItem {Text = "September",Value="September" },
+            new SelectListItem {Text = "Október",Value="Október" },
+            new SelectListItem {Text = "November",Value="November" },
+            new SelectListItem {Text = "December",Value="December" }
+          }, "Mesiac")
+            @Html.Label("Rok")
+            @Html.TextBox("rokZaznamu", DateTime.Now.Year, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
+            <input type="submit" value="Search" />
+            @if (Model.Any())
+            {
+                <h4>Dochádzka za mesiac: @Model.Last().Mesiac</h4>
+            }
+        </div>
+    }
+
+    @grid.GetHtml(tableStyle: "table table-responsive table-bordered table-hover",
+                                                       columns: grid.Columns(
+                                                                             grid.Column(header: "Meno", format: @<text> <div>@item.Meno</div>  </text>),
+                                                                                                                  grid.Column(header: "Odpracovane", format: @<text> <div>@item.Odpracovane</div>  </text>))
+                                                                                                                                                     )
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        @Html.PagedListPager(Model, page => Url.Action("DochadzkaMesiac", new { page }))
+    </div>
+
+</div>
+
+
+
+@section scripts{
+    <script src="~/Scripts/jquery.jeditable.datepicker.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
+    <script src="https://www.appelsiini.net/download/jquery.jeditable.js"></script>
+
+
+    <script>
+
+        $(document).ready(function () {
+            //kalendar styl
+            $('#rokZaznamu').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                dateFormat: 'yy',
+                onClose: function (dateText, inst) {
+                    var month = $(".ui-datepicker-month :selected").val();
+                    var year = $(".ui-datepicker-year :selected").val();
+                    $(this).datepicker('setDate', new Date(year, month, 1));
+                }
+            });
+          
+          
+        });
+    </script>
+}

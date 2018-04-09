@@ -42,14 +42,14 @@
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
                     <li><a href="@Url.Action("Zaznami","Home")">Zaznamy</a></li>
-                    @* <li><a href="#">Page 2</a></li>*@
                     <li><a href="@Url.Action("ZaznamOpravy","Home")">Opravit Zaznamy</a></li>
+                     <li><a href="@Url.Action("DochadzkaMesiac","Home")">Mesačná dochádzka</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#"> <span class="glyphicon glyphicon-user"> @User.Identity.Name</span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("Settings","Home")"><span class="glyphicon glyphicon-cog"> Nastavenia</span></a></li>
+                            <li><a id="UpdateHeslo"><span class="glyphicon glyphicon-cog"> Zmeniť heslo</span></a></li>
                             <li><a href="@Url.Action("Logout","Home")"><span class="glyphicon glyphicon-log-out"> Odhlasit</span></a></li>
                         </ul>
                     </li>
@@ -57,6 +57,31 @@
             </div>
         </div>
     </nav>
+
+    <div id="ZmenHeslo" title="Zmena Hesla">
+        @using (Ajax.BeginForm("ZmenaHesla", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }))
+        {
+            <div class="col-md-10">
+                <div>
+                    @Html.Label("Staré heslo")
+                    @Html.Password("stareHeslo", "", new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div>
+                    @Html.Label("Nové heslo")
+                    @Html.Password("noveHeslo", null, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div>
+                    @Html.Label("Kontrola nového hesla")
+                    @Html.Password("noveHesloKontrola", null, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <input type="submit" value="Uloz" />
+
+            </div>
+        }
+    </div>
+
+
+
     <div class="container body-content">
         @RenderBody()
     </div>
@@ -82,8 +107,43 @@
 </body>
 </html>
 
+<script src="~/Scripts/jquery.jeditable.datepicker.js"></script>
+<script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+<script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
+<script src="https://www.appelsiini.net/download/jquery.jeditable.js"></script>
 
-}
+<script>
+
+  
+    function onSuccess(data) {
+        alert(data.nameError);
+    }
+
+    $(document).ready(function () {
+
+        $('#ZmenHeslo').dialog({
+            resizable: false,
+            autoOpen: false,
+            height: 280,
+            width: 220,
+            modal: true,
+            show: {
+                effect: "fold",
+                duration: 500
+            },
+            hide: {
+                effect: "explode",
+                duration: 500
+            }
+        });
+
+        $('#UpdateHeslo').click(function () {
+            $('#ZmenHeslo').dialog("open");
+        });
+
+    });
+
+</script>
 
 
 

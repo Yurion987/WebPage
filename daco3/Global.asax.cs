@@ -21,6 +21,7 @@ namespace daco3
             LoadData d = new LoadData();
             while (true)
             {
+                
                 d.WebParsing();
                 Trace.TraceInformation("Uspavam thread");
                 Thread.Sleep(180000);

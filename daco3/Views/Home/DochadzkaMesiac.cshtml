@@ -33,6 +33,20 @@
     h1 {
         margin-top: 100px;
     }
+    .table-pager > td {
+        padding-top: 10px;
+    }
+
+        .table-pager > td > a {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 3px 7px;
+        }
+
+            .table-pager > td > a:hover {
+                background-color: #f0f0f0;
+            }
 </style>
 
 
@@ -68,18 +82,17 @@
         </div>
     }
 
-    @grid.GetHtml(tableStyle: "table table-responsive table-bordered table-hover",
+    @grid.GetHtml(
+           mode: WebGridPagerModes.All,
+           rowStyle: "table-row-clickable",
+           footerStyle: "table-pager",
+           tableStyle: "table table-responsive table-bordered table-hover",
                                                        columns: grid.Columns(
                                                                              grid.Column(header: "Meno", format: @<text> <div>@item.Meno</div>  </text>),
                                                                                                                   grid.Column(header: "Odpracovane", format: @<text> <div>@item.Odpracovane</div>  </text>))
                                                                                                                                                      )
 </div>
-<div class="row">
-    <div class="col-sm-6">
-        @Html.PagedListPager(Model, page => Url.Action("DochadzkaMesiac", new { page }))
-    </div>
 
-</div>
 
 
 

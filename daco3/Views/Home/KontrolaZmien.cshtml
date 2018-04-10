@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewBag.Title = "KontrolaZmien";
+    Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
+}
+<style>
+    #posun {
+        margin-top: 200px;
+    }   
+    </style>
+ <div id="posun">
+<table id="tableZmien">
+    <thead>
+    <tr>
+        <th>Vykonavatel</th>
+        <th>Akcia</th>
+        <th>Zaznam</th>
+    </tr>
+    </thead>
+</table>
+     </div>
+
+<link href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
+
+@section Scripts{
+    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#tableZmien').DataTable({
+                "ajax": {
+                    "url": "/Home/LoadData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "Vykonavatel", "name": "Vykonavatel", "autoWidth": true },
+                    {
+                        "data": "Akcia", "name": "Akcia", "autoWidth": true, "render": function (data, type, row, meta) {   
+                            return "Zmeneny typ";
+                        }
+                    },
+                    { "data": "Zaznam", "name": "Zaznam", "autoWidth": true, 
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '<a href="/Home/ZaznamPodrobne/' + data + '">' + data + '</a>';
+                            }
+
+                            return data;
+                        }
+                    }, 
+                  
+                ]
+            });
+            });
+
+    </script>
+}
+
+
+
+

@@ -23,21 +23,21 @@
 
 
 <div id="table" class="row">
-   
-        <input type="button" id="opener" value="Novy Zaznam">
-        @grid.GetHtml(tableStyle: "table table-responsive table-bordered table-hover",
-                                                                                           columns: grid.Columns(
-                                                                                                      grid.Column(columnName: "Meno", header: "Meno"),
-                                                                                                      grid.Column(columnName: "Datum", header: "Datum"),
-                                                                                                      grid.Column(header: "Cas", format: @<text> <div data-id="@item.ZaznamId" data-propertyname="Cas">@item.Cas</div>  </text>),
-                                                                                                                                            grid.Column(header: "Typ", format: @<text> <div class="edit" data-id="@item.ZaznamId" data-propertyname="Typ">@item.Typ</div>  </text>))
-                                                                                                                                                                                                                                                                                                                      )
-    </div>
+
+    <input type="button" id="opener" value="Novy Zaznam">
+    @grid.GetHtml(tableStyle: "table table-responsive table-bordered table-hover",
+                                                                                                        columns: grid.Columns(
+                                                                                                                   grid.Column(columnName: "Meno", header: "Meno"),
+                                                                                                                   grid.Column(columnName: "Datum", header: "Datum"),
+                                                                                                                   grid.Column(header: "Cas", format: @<text> <div data-id="@item.ZaznamId" data-propertyname="Cas">@item.Cas</div>  </text>),
+                                                                                                                                                                          grid.Column(header: "Typ", format: @<text> <div class="edit" data-id="@item.ZaznamId" data-propertyname="Typ">@item.Typ</div>  </text>))
+                                                                                                                                                                                                                                                                                                                                                                           )
+</div>
 
 
 
 <div id="dialog-modal" title="Formular">
-    @using (Ajax.BeginForm("NovyZaznam", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }))
+    @using (Ajax.BeginForm("NovyZaznam", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "Kontrola" }))
     {
         <div>
 
@@ -52,9 +52,9 @@
                 </div>
                 <div class="editor-label">
                     @Html.DropDownList("zaznamTyp", new List<SelectListItem> {
-                                                                new SelectListItem {Text = "Odchod",Value="O" },
-                                                                new SelectListItem {Text = "Prichod",Value="P" }
-                                                              }, "Typ dochadzky")
+                                                                                new SelectListItem {Text = "Odchod",Value="O" },
+                                                                                new SelectListItem {Text = "Prichod",Value="P" }
+                                                                              }, "Typ dochadzky")
                 </div>
                 <div class="editor-label">
                     @Html.LabelFor(m => m.Last().Cas)
@@ -69,28 +69,24 @@
     }
 </div>
 
-
 @section scripts{
-    <script src="~/Scripts/jquery.jeditable.datepicker.js"></script>
+    
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
-    <script src="https://www.appelsiini.net/download/jquery.jeditable.js"></script>
 
-
+    <script src="~/Scripts/jquery-3.0.0.min.js"></script>
     <script>
 
 
 
-        function onSuccess(data) {
-            if (typeof data.nameError !== "undefined") {
-                if (!data.success) {
-                    alert(data.nameError);
-                } else {
-                    aler("zaznam uspesne pridany");
-                }
-            } else {
+        function Kontrola(data) {
+            if (data.success) {
+                alert("Úspešne vytvorený")
                 location.reload();
+            } else {
+                alert(data.nameError);
             }
+              
         }
         $(document).ready(function () {
             //kalendar styl
@@ -100,6 +96,7 @@
                 controlType: 'select',
                 timeOnly: true,
                 format: 'H:m'
+
             });
             //InLine Editing
             var oldValue = '';

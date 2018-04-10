@@ -17,6 +17,7 @@ using System.Web.Security;
 
 namespace daco3.Controllers
 {
+    [RequireHttps]
     public class LoginController : Controller
     {
         private Databaza db { get; set; }
@@ -28,9 +29,7 @@ namespace daco3.Controllers
 
         public ActionResult Index()
         {
-
-     
-            db.SaveChanges();
+        
             var loginData = new LoginClass();
             ViewBag.Err = "";
             return View(loginData);

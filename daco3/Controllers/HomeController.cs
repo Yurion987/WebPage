@@ -21,6 +21,7 @@ using System.Web.Security;
 
 namespace daco3.Controllers
 {
+    [RequireHttps]
     [Authorize]
     public class HomeController : Controller
     {
@@ -41,7 +42,7 @@ namespace daco3.Controllers
         {
             if (sort.Equals("Datum")) sort = "Cas";
             if (sort.Equals("Meno")) sort = "Uzivatel.Username";
-
+            var skip = page.HasValue ? page.Value - 1 : 0;
             var list = db.Zaznami.OrderBy($"{sort} {sortdir}")
              .Select(c => new TabulkaZaznami { Cas = c.Cas, UserName = c.Uzivatel.Username, ZaznamId = c.ZaznamId, UzivatelId = c.UzivatelId }).ToList();
             var reduced = new List<TabulkaZaznami>();
@@ -76,9 +77,9 @@ namespace daco3.Controllers
                 var sumaCasu = odpracovanyCas(denZam);
                 gt.Add(new GridTabulka(item.Cas, item.UserName, item.ZaznamId, sumaCasu));
             }
-            var pagedList = gt.ToPagedList(page ?? 1, 15);
-            ViewBag.TotalRow = pagedList.Count;
-            return View(pagedList);
+
+            ViewBag.TotalRow = gt.Count;
+            return View(gt);
         }
         public ActionResult ZaznamPodrobne(int? id)
         {
@@ -176,7 +177,11 @@ namespace daco3.Controllers
 
             if (uspech)
             {
-                return Redirect(Request.UrlReferrer.PathAndQuery);
+                return new JsonResult()
+                {
+                    Data = new { success = uspech, nameError = "OK" },
+                    JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                };
             }
             else
             {
@@ -227,14 +232,14 @@ namespace daco3.Controllers
 
                 var denZam = db.Zaznami.Where(z => z.UzivatelId == item.UzivatelId).ToList().Where(x => x.Cas.ToString("dd.MM.yyyy").Equals(item.Cas.ToString("dd.MM.yyyy"))).ToList();
                 var sumaCasu = odpracovanyCas(denZam);
-                if (sumaCasu == "0")
+                if (sumaCasu == "0" || sumaCasu == "Je v Praci")
                 {
                     gt.Add(new GridTabulka(item.Cas, item.UserName, item.ZaznamId, sumaCasu));
                 }
             }
             var pagedList = gt.ToPagedList(page ?? 1, 15);
-            ViewBag.TotalRow = pagedList.Count;
-            return View(pagedList);
+            ViewBag.TotalRow = gt.Count;
+            return View(gt);
 
         }
         public ActionResult CompleteName(string term)
@@ -281,7 +286,7 @@ namespace daco3.Controllers
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
         }
-        public ActionResult DochadzkaMesiac(int? page, string menoZamestnanca = "", string mesiac = "",string rokZaznamu="")
+        public ActionResult DochadzkaMesiac(int? page, string menoZamestnanca = "", string mesiac = "", string rokZaznamu = "")
         {
             if (rokZaznamu == "") {
                 rokZaznamu = DateTime.Now.Year.ToString();
@@ -340,6 +345,17 @@ namespace daco3.Controllers
 
 
         }
+        public ActionResult KontrolaZmien() {
+
+            return View();
+        }
+        
+        public ActionResult LoadData() {
+
+            var data = db.Logy.Select(x => new TabulkaZmien { Vykonavatel = x.Uzivatel.Username, Zaznam = x.ZaznamId, Akcia = x.ZmenaTypu }).ToList();
+            return Json(new { data = data }, JsonRequestBehavior.AllowGet);
+
+        }
     }
 
 
@@ -349,5 +365,11 @@ namespace daco3.Controllers
         public string UserName { get; set; }
         public long ZaznamId { get; set; }
         public int UzivatelId { get; set; }
+    }
+
+    public class TabulkaZmien {
+        public string Vykonavatel { get; set; }
+        public long Zaznam { get; set; }
+        public bool Akcia { get; set; }
     }
 }

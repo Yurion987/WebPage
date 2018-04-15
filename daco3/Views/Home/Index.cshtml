@@ -1,6 +1,51 @@
 ﻿@using daco3.Models
 @{
     Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
+    var grid = new WebGrid(canPage: true, rowsPerPage: 15);
+    grid.Bind(source: Model);
 }
 
+@model List<GridTabulka>
 
+<style>
+    #table {
+        margin-top: 100px;
+    }
+
+    .table-pager > td {
+        padding-top: 10px;
+    }
+
+        .table-pager > td > a {
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 3px 7px;
+        }
+
+            .table-pager > td > a:hover {
+                background-color: #f0f0f0;
+            }
+</style>
+
+<div id="table">
+    <h3>Moja dochadzka(@User.Identity.Name)</h3>
+    @grid.GetHtml(
+                       mode: WebGridPagerModes.All,
+                      rowStyle: "table-row-clickable",
+                      footerStyle: "table-pager",
+                      tableStyle: "table table-responsive table-bordered table-hover",
+                                           columns: grid.Columns(
+                                                                grid.Column(columnName: "Meno", header: "Meno"),
+                                                                grid.Column(columnName: "Datum", header: "Datum"),
+                                                                grid.Column(columnName: "Cas", header: "Cas"),
+                                                                grid.Column(columnName: "Typ", header: "Typ", format: @<text>  @if (item.Typ == "P") {
+    <div>Prichod</div>
+                                                                } else {
+    <div>Odchod</div>
+                                                                }</text>
+                                                                                                     )
+
+                                                                               )
+                                                                               )
+</div>

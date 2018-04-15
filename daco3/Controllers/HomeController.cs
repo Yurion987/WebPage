@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using System.Threading;
 using System.Globalization;
 using System.Web.Security;
+using System.Threading.Tasks;
 
 namespace daco3.Controllers
 {
@@ -34,11 +35,17 @@ namespace daco3.Controllers
 
         public ActionResult Index()
         {
-            var tralala = User.Identity.Name;
-            var b = User as MojPrincipal;
-            return View();
+
+            var celaDoch = db.Zaznami.Where(x => x.Uzivatel.Username == User.Identity.Name).ToList();
+            List<GridTabulka> tab = new List<GridTabulka>();
+            foreach (var item in celaDoch)
+            {
+                tab.Add(new GridTabulka(item.Cas,item.Uzivatel.Username,item.Typ,item.ZaznamId));
+            }
+           
+            return View(tab);
         }
-        public ActionResult Zaznami(int? page, string sort = "Cas", string sortdir = "desc", string userName = "", string zaznamCasOd = "", string zaznamCasDo = "")
+        public  ActionResult Zaznami(int? page, string sort = "Cas", string sortdir = "desc", string userName = "", string zaznamCasOd = "", string zaznamCasDo = "")
         {
             if (sort.Equals("Datum")) sort = "Cas";
             if (sort.Equals("Meno")) sort = "Uzivatel.Username";
@@ -75,23 +82,11 @@ namespace daco3.Controllers
 
                 var denZam = db.Zaznami.Where(z => z.UzivatelId == item.UzivatelId).ToList().Where(x => x.Cas.ToString("dd.MM.yyyy").Equals(item.Cas.ToString("dd.MM.yyyy"))).ToList();
                 var sumaCasu = odpracovanyCas(denZam);
-                gt.Add(new GridTabulka(item.Cas, item.UserName, item.ZaznamId, sumaCasu));
+                var dochString = formatDoch(denZam);
+                gt.Add(new GridTabulka(item.Cas, item.UserName, item.ZaznamId, sumaCasu, dochString));
             }
 
             ViewBag.TotalRow = gt.Count;
-            return View(gt);
-        }
-        public ActionResult ZaznamPodrobne(int? id)
-        {
-
-            var zaznam = db.Zaznami.Where(x => x.ZaznamId == id).FirstOrDefault();
-            var vsetkyZaznamiDna = db.Zaznami.Where(x => x.UzivatelId == zaznam.UzivatelId).ToList().Where(x => x.Cas.ToString("dd.MM.yyyy").Equals(zaznam.Cas.ToString("dd.MM.yyyy"))).ToList();
-            List<GridTabulka> gt = new List<GridTabulka>();
-            foreach (var item in vsetkyZaznamiDna)
-            {
-                gt.Add(new GridTabulka(item.Cas, item.Uzivatel.Username, item.Typ, item.ZaznamId));
-            }
-            ViewBag.TotalRowSingleDay = gt.Count;
             return View(gt);
         }
         private string odpracovanyCas(List<Zaznam> den)
@@ -117,11 +112,46 @@ namespace daco3.Controllers
             }
 
         }
+        private string formatDoch(List<Zaznam> den) {
+            string format = "";
+            foreach (var item in den)
+            {
+                format = format + item.Cas.ToString("HH:mm")+"-";
+                if (item.Typ == "O")
+                {
+                    format = format.Remove(format.Length - 1);
+                    format = format + " | ";
+                }
+            }
+
+            if (den.Last().Typ == "O")
+                format = format.Remove(format.Length - 2);
+            return format;
+
+        }
+        public ActionResult ZaznamPodrobne(int? id)
+        {
+
+            var zaznam = db.Zaznami.Where(x => x.ZaznamId == id).FirstOrDefault();
+            if (zaznam != null)
+            {
+                var vsetkyZaznamiDna = db.Zaznami.Where(x => x.UzivatelId == zaznam.UzivatelId).ToList().Where(x => x.Cas.ToString("dd.MM.yyyy").Equals(zaznam.Cas.ToString("dd.MM.yyyy"))).ToList();
+                List<GridTabulka> gt = new List<GridTabulka>();
+                foreach (var item in vsetkyZaznamiDna)
+                {
+                    gt.Add(new GridTabulka(item.Cas, item.Uzivatel.Username, item.Typ, item.ZaznamId,item.ZaznamIdWeb));
+                }
+                ViewBag.TotalRowSingleDay = gt.Count;
+                return View(gt);
+            }
+            return RedirectToAction("ZaznamOpravy", "Home");
+        }
         [HttpPost]
         public ActionResult save(long id, string propertyName, string value)
         {
             var status = false;
             var message = "";
+            var converVal = value == "P" ? "Prichod" : "Odchod"; 
             if (value == "O" || value == "P")
             {
 
@@ -148,7 +178,7 @@ namespace daco3.Controllers
             }
 
             //odpoved
-            var response = new { value = value, status = status, message = message };
+            var response = new { value = converVal, status = status, message = message };
 
             JObject o = JObject.FromObject(response);
             return Content(o.ToString());
@@ -348,13 +378,31 @@ namespace daco3.Controllers
         public ActionResult KontrolaZmien() {
 
             return View();
-        }
-        
+        } 
         public ActionResult LoadData() {
 
             var data = db.Logy.Select(x => new TabulkaZmien { Vykonavatel = x.Uzivatel.Username, Zaznam = x.ZaznamId, Akcia = x.ZmenaTypu }).ToList();
             return Json(new { data = data }, JsonRequestBehavior.AllowGet);
 
+        }
+        [HttpPost]
+        public ActionResult DeleteData(int id)
+        {
+            bool success = false;
+            var zaznamRem = db.Zaznami.Find(id);
+            if (zaznamRem != null)
+            {
+                db.Zaznami.Remove(zaznamRem);
+                db.SaveChanges();
+                success = true;
+            }
+            var url = Request.Url.PathAndQuery;
+
+            return new JsonResult()
+            {
+                Data = new { success = success },
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
         }
     }
 

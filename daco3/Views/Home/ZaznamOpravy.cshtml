@@ -39,7 +39,7 @@
 
     
     <div id="table">
-        @using (Html.BeginForm("ZaznamOpravy", "Home"))
+        @using (Html.BeginForm("ZaznamOpravy",null, FormMethod.Get))
     {
         <div class="col-md-10">
             @Html.Label("Meno")
@@ -56,7 +56,7 @@
                                                  columns: grid.Columns(
                                                           grid.Column(columnName: "Meno", header: "Meno"),
                                                           grid.Column(columnName: "Datum", header: "Datum"),
-                                                          grid.Column(header: "Podrobne", format: (item) => Html.ActionLink("⇨", "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null))
+                                                          grid.Column(header: "Opravit", format: (item) => Html.ActionLink("Opravit Zaznam", "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null))
                                                                         )
 
                                                          )

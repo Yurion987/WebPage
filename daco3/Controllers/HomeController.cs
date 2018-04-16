@@ -49,6 +49,7 @@ namespace daco3.Controllers
         }
         public ActionResult Zaznami(int? page, string sort = "Cas", string sortdir = "desc", string userName = "", string zaznamCasOd = "", string zaznamCasDo = "")
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
             if (sort.Equals("Datum")) sort = "Cas";
             if (sort.Equals("Meno")) sort = "Uzivatel.Username";
             var skip = page.HasValue ? page.Value - 1 : 0;
@@ -152,6 +153,7 @@ namespace daco3.Controllers
         [HttpPost]
         public ActionResult save(long id, string propertyName, string value)
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
             var status = false;
             var message = "";
             string converVal = "";
@@ -189,7 +191,7 @@ namespace daco3.Controllers
             else if(propertyName=="Cas")
             {
                DateTime t ;
-                if (DateTime.TryParse(value, out t) && t.Hour >= 6 && t.Hour <= 17)
+                if (DateTime.TryParse(value,out t) && t.Hour >= 6 && t.Hour <= 17)
                 {
                     var zaznam = db.Zaznami.Where(x => x.ZaznamId == id).FirstOrDefault();
                     if (zaznam != null)
@@ -199,7 +201,7 @@ namespace daco3.Controllers
                         db.Logy.Add(new Log() { UzivatelId = idPrihlaseneho, ZmenaTypu = false, ZaznamId = id,StaraHodnota=zaznam.Cas});
 
                         string novyDatum = zaznam.Cas.ToString("dd.MM.yyyy")+" "+t.ToString("HH:mm");
-                        DateTime updateCas = DateTime.Parse(novyDatum);
+                        DateTime updateCas = DateTime.Parse(novyDatum, CultureInfo.CurrentCulture);
                         converVal = t.ToString("HH:mm");
                         db.Entry(zaznam).Property(propertyName).CurrentValue = updateCas;
                         db.SaveChanges();
@@ -359,6 +361,7 @@ namespace daco3.Controllers
         }
         public ActionResult DochadzkaMesiac(int? page, string menoZamestnanca = "", string mesiac = "", string rokZaznamu = "")
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
             if (rokZaznamu == "")
             {
                 rokZaznamu = DateTime.Now.Year.ToString();
@@ -424,6 +427,7 @@ namespace daco3.Controllers
         }
         public ActionResult LoadData()
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
             var data= db.Logy.ToList();
             List<TabulkaZmien> tabZ = new List<TabulkaZmien>();
             foreach (var item in data)
@@ -458,7 +462,6 @@ namespace daco3.Controllers
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
         }
-
         [STAThread]
         private void SaveExcel()
         {
@@ -540,7 +543,6 @@ namespace daco3.Controllers
     
             }
         }
-
         public ActionResult CreateExcel()
         {
            

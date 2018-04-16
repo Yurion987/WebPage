@@ -6,7 +6,8 @@
 }
 
 @model List<GridTabulka>
-
+<link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
+<link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
 <style>
     #table {
         margin-top: 100px;
@@ -31,21 +32,33 @@
 <div id="table">
     <h3>Moja dochadzka(@User.Identity.Name)</h3>
     @grid.GetHtml(
-                       mode: WebGridPagerModes.All,
-                      rowStyle: "table-row-clickable",
-                      footerStyle: "table-pager",
-                      tableStyle: "table table-responsive table-bordered table-hover",
-                                           columns: grid.Columns(
-                                                                grid.Column(columnName: "Meno", header: "Meno"),
-                                                                grid.Column(columnName: "Datum", header: "Datum"),
-                                                                grid.Column(columnName: "Cas", header: "Cas"),
-                                                                grid.Column(columnName: "Typ", header: "Typ", format: @<text>  @if (item.Typ == "P") {
-    <div>Prichod</div>
-                                                                } else {
-    <div>Odchod</div>
-                                                                }</text>
-                                                                                                     )
+                                   mode: WebGridPagerModes.All,
+                                  rowStyle: "table-row-clickable",
+                                  footerStyle: "table-pager",
+                                  tableStyle: "table table-responsive table-bordered table-hover",
+                                                       columns: grid.Columns(
+                                                                            grid.Column(columnName: "Meno", header: "Meno"),
+                                                                            grid.Column(columnName: "Datum", header: "Datum"),
+                                                                            grid.Column(columnName: "Cas", header: "Cas"),
+                                                                            grid.Column(columnName: "Typ", header: "Typ", format: @<text>  @if (item.Typ == "P")
+                                                                                            {
+                                                                                    <div>Prichod</div>
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                    <div>Odchod</div>
+                                                                                            }
+                                                                               
+                                                                          
+                                                                            </text>
+                                                                                                                                         )
 
-                                                                               )
-                                                                               )
+                                                                                                                   )
+                                                                                                                   )
 </div>
+@section scripts{
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+
+
+    <script src="~/Scripts/jquery-3.0.0.min.js"></script>
+}

@@ -29,7 +29,7 @@
                           columns: grid.Columns(
                          grid.Column(columnName: "Meno", header: "Meno"),
                          grid.Column(columnName: "Datum", header: "Datum"),
-                         grid.Column(header: "Cas", format: @<text> <div data-id="@item.ZaznamId" data-propertyname="Cas">@item.Cas</div>  </text>),
+                         grid.Column(header: "Cas", format: @<text> <div class="editDate" data-id="@item.ZaznamId" data-propertyname="Cas">@item.Cas</div>  </text>),
                                  grid.Column(columnName: "Typ", header: "Typ", format: @<text>  @if (item.Typ == "P")
                                                 {
                                         <div class="edit" data-id="@item.ZaznamId" data-propertyname="Typ">Prichod</div>
@@ -108,7 +108,7 @@
                 format: 'H:m'
 
             });
-            //InLine Editing
+            //InLine Editing typ
             var oldValue = '';
             $('.edit').editable('/home/save', {
                 cssClass: 'jeditForm',
@@ -117,6 +117,31 @@
                 data: " {'P':'Prichod','O':'Odchod','selected':'O'}",
                 type: 'select',
                 submit: 'Ok',
+                onsubmit: function (settings, original) {
+                    oldValue = original.revert;
+                },
+                submitdata: function () {
+                    return {
+                        id: $(this).data('id'),
+                        PropertyName: $(this).data('propertyname')
+                    }
+                },
+                callback: function (value, settings) {
+                    var jsonData = $.parseJSON(value);
+                    if (jsonData.status) {
+                        $(this).text(jsonData.value);
+                    } else {
+                        $(this).text(oldValue);
+                        alert(jsonData.message);
+                    }
+
+                }
+            });
+            //inline Editing text
+            $('.editDate').editable('/home/save', {
+                cssClass: 'jeditForm',
+                width: 'none',
+                height: 'none',
                 onsubmit: function (settings, original) {
                     oldValue = original.revert;
                 },

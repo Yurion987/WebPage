@@ -24,11 +24,12 @@ namespace daco3.Controllers
 
         public LoginController()
         {
-            this.db = new Databaza();
+           db = new Databaza();
         }
 
         public ActionResult Index()
         {
+          
         
             var loginData = new LoginClass();
             ViewBag.Err = "";

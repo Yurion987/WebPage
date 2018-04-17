@@ -199,6 +199,7 @@
     <Content Include="Content\bootstrap-reboot.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
+    <Content Include="Excel\Dochadzka.xlsx" />
     <None Include="Properties\PublishProfiles\BakalarkaUniza - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\BakalarkaUniza - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.0.0-vsdoc.js" />

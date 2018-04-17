@@ -466,82 +466,90 @@ namespace daco3.Controllers
         private void SaveExcel()
         {
             var ulozData = db.Zaznami.Where(x => x.ZaznamId != 0).ToList();
-            SaveFileDialog svD = new SaveFileDialog();
-            svD.RestoreDirectory = true;
-            svD.Filter = "Excel File|*.xlsx";
+
+            string filePath = Server.MapPath("~")+ "\\Excel\\Dochadzka.xlsx";
+
+
+
+            FileInfo inf = new FileInfo(filePath);
+          
             
-            if (svD.ShowDialog() == DialogResult.OK)
-            {
-            
-                
-                string filePath = svD.FileName;
-                FileInfo inf = new FileInfo(filePath);
-                if (inf.Exists) {
-                    try
+                try
+                {
+                    if (inf.Exists)inf.Delete();
+                    
+                   
+                    ExcelPackage pck = new ExcelPackage(inf);
+
+                    var worksheet = pck.Workbook.Worksheets.Add("Dochadzka");
+                    var worksheet2 = pck.Workbook.Worksheets.Add("Mesacna Dochadzka");
+                    worksheet.Cells["A1"].Value = "Meno";
+                    worksheet.Cells["B1"].Value = "Mesiac";
+                    worksheet.Cells["C1"].Value = "Den";
+                    worksheet.Cells["D1"].Value = "Cas";
+                    worksheet.Cells["E1"].Value = "Typ";
+                    worksheet2.Cells["A1"].Value = "Meno";
+                    worksheet2.Cells["B1"].Value = "Mesiac";
+                    worksheet2.Cells["C1"].Value = "Celkovo";
+                    worksheet.Cells["A1:E1"].Style.Font.Bold = true;
+                    worksheet2.Cells["A1:C1"].Style.Font.Bold = true;
+                    int row = 2;
+                    foreach (var item in ulozData)
                     {
-                        inf.Delete();
-                        ExcelPackage pck = new ExcelPackage(inf);
+                        worksheet.Cells["A" + row.ToString()].Value = item.Uzivatel.Username;
+                        worksheet.Cells["B" + row.ToString()].Value = item.Cas.ToString("MMMM");
+                        worksheet.Cells["C" + row.ToString()].Value = Int32.Parse(item.Cas.ToString("dd"));
+                        worksheet.Cells["D" + row.ToString()].Value = item.Cas.ToString("HH:mm");
+                        worksheet.Cells["E" + row.ToString()].Value = item.Typ == "P" ? "Prichod" : "Odchod";
+                        row++;
+                    }
 
-                        var worksheet = pck.Workbook.Worksheets.Add("Dochadzka");
-                        var worksheet2 = pck.Workbook.Worksheets.Add("Mesacna Dochadzka");
-                        worksheet.Cells["A1"].Value = "Meno";
-                        worksheet.Cells["B1"].Value = "Mesiac";
-                        worksheet.Cells["C1"].Value = "Den";
-                        worksheet.Cells["D1"].Value = "Cas";
-                        worksheet.Cells["E1"].Value = "Typ";
-                        worksheet2.Cells["A1"].Value = "Meno";
-                        worksheet2.Cells["B1"].Value = "Mesiac";
-                        worksheet2.Cells["C1"].Value = "Celkovo";
-                        worksheet.Cells["A1:E1"].Style.Font.Bold = true;
-                        worksheet2.Cells["A1:C1"].Style.Font.Bold = true;
-                        int row = 2;
-                        foreach (var item in ulozData)
+                    worksheet.Cells["A1:E" + row.ToString()].AutoFitColumns();
+                    worksheet.Cells["A1:E1"].AutoFilter = true;
+
+                    var cisloRoku = DateTime.ParseExact(DateTime.Now.Year.ToString(), "yyyy", CultureInfo.CurrentCulture).Year;
+                    var pocetLudi = db.Uzivatelia.Select(x => x.UzivatelId).ToList();
+                    row = 2;
+                    for (int i = 1; i < 13; i++)
+                    {
+
+                        var ulozMesiacData = db.Zaznami.Where(x => x.Cas.Month == i && x.Cas.Year == cisloRoku).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
+                        if (ulozMesiacData != null)
                         {
-                            worksheet.Cells["A" + row.ToString()].Value = item.Uzivatel.Username;
-                            worksheet.Cells["B" + row.ToString()].Value = item.Cas.ToString("MMMM");
-                            worksheet.Cells["C" + row.ToString()].Value = Int32.Parse(item.Cas.ToString("dd"));
-                            worksheet.Cells["D" + row.ToString()].Value = item.Cas.ToString("HH:mm");
-                            worksheet.Cells["E" + row.ToString()].Value = item.Typ == "P" ? "Prichod" : "Odchod";
-                            row++;
-                        }
-
-                        worksheet.Cells["A1:E" + row.ToString()].AutoFitColumns();
-                        worksheet.Cells["A1:E1"].AutoFilter = true;
-
-                        var cisloRoku = DateTime.ParseExact(DateTime.Now.Year.ToString(), "yyyy", CultureInfo.CurrentCulture).Year;
-                        var pocetLudi = db.Uzivatelia.Select(x => x.UzivatelId).ToList();
-                        row = 2;
-                        for (int i = 1; i < 13; i++)
-                        {
-
-                            var ulozMesiacData = db.Zaznami.Where(x => x.Cas.Month == i && x.Cas.Year == cisloRoku).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
-                            if (ulozMesiacData != null)
+                            foreach (var item in ulozMesiacData)
                             {
-                                foreach (var item in ulozMesiacData)
-                                {
-                                    worksheet2.Cells["A" + row.ToString()].Value = item[0].Uzivatel.Username;
-                                    worksheet2.Cells["B" + row.ToString()].Value = item[0].Cas.ToString("MMMM");
-                                    var doch = celkovaDochadzkaZaMesiac(item);
-                                    worksheet2.Cells["C" + row.ToString()].Value = doch == "Nekompletná dochádzka nutnosť opravy" ? "chyba v dochadzke" : doch;
-                                    row++;
-                                }
+                                worksheet2.Cells["A" + row.ToString()].Value = item[0].Uzivatel.Username;
+                                worksheet2.Cells["B" + row.ToString()].Value = item[0].Cas.ToString("MMMM");
+                                var doch = celkovaDochadzkaZaMesiac(item);
+                                worksheet2.Cells["C" + row.ToString()].Value = doch == "Nekompletná dochádzka nutnosť opravy" ? "chyba v dochadzke" : doch;
+                                row++;
                             }
                         }
-                        worksheet2.Cells["A1:C" + row.ToString()].AutoFitColumns();
-                        worksheet2.Cells["A1:B1"].AutoFilter = true;
-                        worksheet.View.FreezePanes(2, 1);
-                        worksheet2.View.FreezePanes(2, 1);
+                    }
+                    worksheet2.Cells["A1:C" + row.ToString()].AutoFitColumns();
+                    worksheet2.Cells["A1:B1"].AutoFilter = true;
+                    worksheet.View.FreezePanes(2, 1);
+                    worksheet2.View.FreezePanes(2, 1);
 
 
-                        pck.Save();
-                    }
-                    catch (IOException)
-                    {
-                        MessageBox.Show("Subor je otvoreny (Zatvorit subor: "+inf.Name+")");
-                    }
-                } 
+                    pck.Save();
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Subor je otvoreny (Zatvorit subor: " + inf.Name + ")");
+                }
+
+
+
+                Response.Clear();
+                Response.ContentType = "application/octect-stream";
+                Response.AppendHeader("content-disposition", "filename=Dochadzka.xlsx");
+                Response.TransmitFile(filePath);
+                Response.End();
+
+            
     
-            }
+            
         }
         public ActionResult CreateExcel()
         {

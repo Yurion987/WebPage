@@ -47,9 +47,10 @@ namespace daco3.Controllers
 
             return View(tab);
         }
+        [Authorize(Roles = "Admin,Uctovnicka")]
         public ActionResult Zaznami(int? page, string sort = "Cas", string sortdir = "desc", string userName = "", string zaznamCasOd = "", string zaznamCasDo = "")
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
+          
             if (sort.Equals("Datum")) sort = "Cas";
             if (sort.Equals("Meno")) sort = "Uzivatel.Username";
             var skip = page.HasValue ? page.Value - 1 : 0;
@@ -133,13 +134,14 @@ namespace daco3.Controllers
             return format;
 
         }
+        [Authorize(Roles = "Admin,Uctovnicka")]
         public ActionResult ZaznamPodrobne(int? id)
         {
 
             var zaznam = db.Zaznami.Where(x => x.ZaznamId == id).FirstOrDefault();
             if (zaznam != null)
             {
-                var vsetkyZaznamiDna = db.Zaznami.Where(x => x.UzivatelId == zaznam.UzivatelId).ToList().Where(x => x.Cas.ToString("dd.MM.yyyy").Equals(zaznam.Cas.ToString("dd.MM.yyyy"))).ToList();
+                var vsetkyZaznamiDna = db.Zaznami.Where(x => x.UzivatelId == zaznam.UzivatelId).ToList().Where(x => x.Cas.ToString("dd.MM.yyyy").Equals(zaznam.Cas.ToString("dd.MM.yyyy"))).OrderBy(x=>x.Cas).ToList();
                 List<GridTabulka> gt = new List<GridTabulka>();
                 foreach (var item in vsetkyZaznamiDna)
                 {
@@ -153,7 +155,7 @@ namespace daco3.Controllers
         [HttpPost]
         public ActionResult save(long id, string propertyName, string value)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
+         
             var status = false;
             var message = "";
             string converVal = "";
@@ -220,7 +222,6 @@ namespace daco3.Controllers
           
             
 
-            //odpoved
             var response = new { value = converVal, status = status, message = message };
 
             JObject o = JObject.FromObject(response);
@@ -239,7 +240,7 @@ namespace daco3.Controllers
             else
             {
                 var copy = db.Zaznami.Find(zaznamId);
-                Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
+         
                 var casZaznamu = copy.Cas.ToString("dd.MM.yyyy");
                 var pridanyCas = zaznamCas.ToString("HH:mm");
                 var cas = DateTime.Parse(casZaznamu + " " + pridanyCas, CultureInfo.CurrentCulture);
@@ -272,6 +273,7 @@ namespace daco3.Controllers
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Login");
         }
+        [Authorize(Roles = "Admin,Uctovnicka")]
         public ActionResult ZaznamOpravy(int? page, string sort = "Datum", string sortdir = "desc", string userName = "")
         {
             if (sort.Equals("Datum") || sort.Equals("Odpracovane")) sort = "Cas";
@@ -359,9 +361,10 @@ namespace daco3.Controllers
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
         }
+        [Authorize(Roles = "Admin,Uctovnicka")]
         public ActionResult DochadzkaMesiac(int? page, string menoZamestnanca = "", string mesiac = "", string rokZaznamu = "")
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
+       
             if (rokZaznamu == "")
             {
                 rokZaznamu = DateTime.Now.Year.ToString();
@@ -420,6 +423,7 @@ namespace daco3.Controllers
 
 
         }
+        [Authorize(Roles = "Admin")]
         public ActionResult KontrolaZmien()
         {
 
@@ -427,7 +431,7 @@ namespace daco3.Controllers
         }
         public ActionResult LoadData()
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
+      
             var data= db.Logy.ToList();
             List<TabulkaZmien> tabZ = new List<TabulkaZmien>();
             foreach (var item in data)
@@ -462,108 +466,95 @@ namespace daco3.Controllers
                 JsonRequestBehavior = JsonRequestBehavior.AllowGet
             };
         }
-        [STAThread]
-        private void SaveExcel()
+        [Authorize(Roles = "Admin")]
+        public ActionResult CreateExcel()
         {
+
+
             var ulozData = db.Zaznami.Where(x => x.ZaznamId != 0).ToList();
 
-            string filePath = Server.MapPath("~")+ "\\Excel\\Dochadzka.xlsx";
+            string filePath = Server.MapPath("~") + "\\Excel\\Dochadzka.xlsx";
 
 
 
             FileInfo inf = new FileInfo(filePath);
-          
-            
-                try
+
+
+            try
+            {
+                if (inf.Exists) inf.Delete();
+
+
+                ExcelPackage pck = new ExcelPackage(inf);
+
+                var worksheet = pck.Workbook.Worksheets.Add("Dochadzka");
+                var worksheet2 = pck.Workbook.Worksheets.Add("Mesacna Dochadzka");
+                worksheet.Cells["A1"].Value = "Meno";
+                worksheet.Cells["B1"].Value = "Mesiac";
+                worksheet.Cells["C1"].Value = "Den";
+                worksheet.Cells["D1"].Value = "Cas";
+                worksheet.Cells["E1"].Value = "Typ";
+                worksheet2.Cells["A1"].Value = "Meno";
+                worksheet2.Cells["B1"].Value = "Mesiac";
+                worksheet2.Cells["C1"].Value = "Celkovo";
+                worksheet.Cells["A1:E1"].Style.Font.Bold = true;
+                worksheet2.Cells["A1:C1"].Style.Font.Bold = true;
+                int row = 2;
+                foreach (var item in ulozData)
                 {
-                    if (inf.Exists)inf.Delete();
-                    
-                   
-                    ExcelPackage pck = new ExcelPackage(inf);
+                    worksheet.Cells["A" + row.ToString()].Value = item.Uzivatel.Username;
+                    worksheet.Cells["B" + row.ToString()].Value = item.Cas.ToString("MMMM");
+                    worksheet.Cells["C" + row.ToString()].Value = Int32.Parse(item.Cas.ToString("dd"));
+                    worksheet.Cells["D" + row.ToString()].Value = item.Cas.ToString("HH:mm");
+                    worksheet.Cells["E" + row.ToString()].Value = item.Typ == "P" ? "Prichod" : "Odchod";
+                    row++;
+                }
 
-                    var worksheet = pck.Workbook.Worksheets.Add("Dochadzka");
-                    var worksheet2 = pck.Workbook.Worksheets.Add("Mesacna Dochadzka");
-                    worksheet.Cells["A1"].Value = "Meno";
-                    worksheet.Cells["B1"].Value = "Mesiac";
-                    worksheet.Cells["C1"].Value = "Den";
-                    worksheet.Cells["D1"].Value = "Cas";
-                    worksheet.Cells["E1"].Value = "Typ";
-                    worksheet2.Cells["A1"].Value = "Meno";
-                    worksheet2.Cells["B1"].Value = "Mesiac";
-                    worksheet2.Cells["C1"].Value = "Celkovo";
-                    worksheet.Cells["A1:E1"].Style.Font.Bold = true;
-                    worksheet2.Cells["A1:C1"].Style.Font.Bold = true;
-                    int row = 2;
-                    foreach (var item in ulozData)
+                worksheet.Cells["A1:E" + row.ToString()].AutoFitColumns();
+                worksheet.Cells["A1:E1"].AutoFilter = true;
+
+                var cisloRoku = DateTime.ParseExact(DateTime.Now.Year.ToString(), "yyyy", CultureInfo.CurrentCulture).Year;
+                var pocetLudi = db.Uzivatelia.Select(x => x.UzivatelId).ToList();
+                row = 2;
+                for (int i = 1; i < 13; i++)
+                {
+
+                    var ulozMesiacData = db.Zaznami.Where(x => x.Cas.Month == i && x.Cas.Year == cisloRoku).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
+                    if (ulozMesiacData != null)
                     {
-                        worksheet.Cells["A" + row.ToString()].Value = item.Uzivatel.Username;
-                        worksheet.Cells["B" + row.ToString()].Value = item.Cas.ToString("MMMM");
-                        worksheet.Cells["C" + row.ToString()].Value = Int32.Parse(item.Cas.ToString("dd"));
-                        worksheet.Cells["D" + row.ToString()].Value = item.Cas.ToString("HH:mm");
-                        worksheet.Cells["E" + row.ToString()].Value = item.Typ == "P" ? "Prichod" : "Odchod";
-                        row++;
-                    }
-
-                    worksheet.Cells["A1:E" + row.ToString()].AutoFitColumns();
-                    worksheet.Cells["A1:E1"].AutoFilter = true;
-
-                    var cisloRoku = DateTime.ParseExact(DateTime.Now.Year.ToString(), "yyyy", CultureInfo.CurrentCulture).Year;
-                    var pocetLudi = db.Uzivatelia.Select(x => x.UzivatelId).ToList();
-                    row = 2;
-                    for (int i = 1; i < 13; i++)
-                    {
-
-                        var ulozMesiacData = db.Zaznami.Where(x => x.Cas.Month == i && x.Cas.Year == cisloRoku).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
-                        if (ulozMesiacData != null)
+                        foreach (var item in ulozMesiacData)
                         {
-                            foreach (var item in ulozMesiacData)
-                            {
-                                worksheet2.Cells["A" + row.ToString()].Value = item[0].Uzivatel.Username;
-                                worksheet2.Cells["B" + row.ToString()].Value = item[0].Cas.ToString("MMMM");
-                                var doch = celkovaDochadzkaZaMesiac(item);
-                                worksheet2.Cells["C" + row.ToString()].Value = doch == "Nekompletná dochádzka nutnosť opravy" ? "chyba v dochadzke" : doch;
-                                row++;
-                            }
+                            worksheet2.Cells["A" + row.ToString()].Value = item[0].Uzivatel.Username;
+                            worksheet2.Cells["B" + row.ToString()].Value = item[0].Cas.ToString("MMMM");
+                            var doch = celkovaDochadzkaZaMesiac(item);
+                            worksheet2.Cells["C" + row.ToString()].Value = doch == "Nekompletná dochádzka nutnosť opravy" ? "chyba v dochadzke" : doch;
+                            row++;
                         }
                     }
-                    worksheet2.Cells["A1:C" + row.ToString()].AutoFitColumns();
-                    worksheet2.Cells["A1:B1"].AutoFilter = true;
-                    worksheet.View.FreezePanes(2, 1);
-                    worksheet2.View.FreezePanes(2, 1);
-
-
-                    pck.Save();
                 }
-                catch (IOException)
-                {
-                    MessageBox.Show("Subor je otvoreny (Zatvorit subor: " + inf.Name + ")");
-                }
+                worksheet2.Cells["A1:C" + row.ToString()].AutoFitColumns();
+                worksheet2.Cells["A1:B1"].AutoFilter = true;
+                worksheet.View.FreezePanes(2, 1);
+                worksheet2.View.FreezePanes(2, 1);
+
+
+                pck.Save();
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("Subor je otvoreny (Zatvorit subor: " + inf.Name + ")");
+            }
 
 
 
-                Response.Clear();
-                Response.ContentType = "application/octect-stream";
-                Response.AppendHeader("content-disposition", "filename=Dochadzka.xlsx");
-                Response.TransmitFile(filePath);
-                Response.End();
-
-            
-    
-            
-        }
-        public ActionResult CreateExcel()
-        {
-           
-           
-            Thread t = new Thread(new ThreadStart(SaveExcel));
-            t.SetApartmentState(ApartmentState.STA); 
-            t.Start();
-            t.Join();         
+            Response.Clear();
+            Response.ContentType = "application/octect-stream";
+            Response.AppendHeader("content-disposition", "filename=Dochadzka.xlsx");
+            Response.TransmitFile(filePath);
+            Response.End();
             return RedirectToAction("Index","Home");
         }
     }
-
-
     public class TabulkaZaznami
     {
         public DateTime Cas { get; set; }
@@ -571,7 +562,6 @@ namespace daco3.Controllers
         public long ZaznamId { get; set; }
         public int UzivatelId { get; set; }
     }
-
     public class TabulkaZmien
     {
         public string Vykonavatel { get; set; }

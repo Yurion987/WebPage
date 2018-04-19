@@ -18,6 +18,7 @@
     #table {
         margin-top: 100px;
     }
+
     .table-pager > td {
         padding-top: 10px;
     }
@@ -37,43 +38,43 @@
 
 <body>
 
-    
+
     <div id="table">
-        @using (Html.BeginForm("ZaznamOpravy",null, FormMethod.Get))
-    {
-        <div class="col-md-10">
-            @Html.Label("Meno")
-            @Html.TextBox("userName", null, new { htmlAttributes = new { @class = "form-control" } })
-            <input type="submit" value="Search" />
+        @using (Html.BeginForm("ZaznamOpravy", null, FormMethod.Get))
+        {
+            <div >
+                @Html.Label("Meno")
+                @Html.TextBox("userName", null, new { htmlAttributes = new { @class = "form-control" } })
+                <input class="btn btn-info" style="margin-bottom:2px" type="submit" value="Hladaj" />
 
-        </div>
-}
+            </div>
+        }
         @grid.GetHtml(
-       mode: WebGridPagerModes.All,
-           rowStyle: "table-row-clickable",
-           footerStyle: "table-pager",
-           tableStyle: "table table-responsive table-bordered table-hover",
-                                                 columns: grid.Columns(
-                                                          grid.Column(columnName: "Meno", header: "Meno"),
-                                                          grid.Column(columnName: "Datum", header: "Datum"),
-                                                          grid.Column(header: "Opravit", format: (item) => Html.ActionLink("Opravit Zaznam", "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null))
-                                                                        )
+            mode: WebGridPagerModes.All,
+                rowStyle: "table-row-clickable",
+                footerStyle: "table-pager",
+                tableStyle: "table table-responsive table-bordered table-hover",
+                                                      columns: grid.Columns(
+                                                               grid.Column(columnName: "Meno", header: "Meno"),
+                                                               grid.Column(columnName: "Datum", header: "Datum"),
+                                                               grid.Column(header: "Opravit", format: (item) => Html.ActionLink("Opravit Zaznam", "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null))
+                                                                             )
 
-                                                         )
+                                                              )
 
-    
+
     </div>
 </body>
-    
+
 @section scripts{
-   
+
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
-   
+
     <script>
 
 
         $(document).ready(function () {
-          
+
             //autocompelte
             $('#userName').autocomplete({
                 source: '/Home/CompleteName'

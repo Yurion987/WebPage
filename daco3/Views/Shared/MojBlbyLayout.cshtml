@@ -13,13 +13,13 @@
     <script src="~/Scripts/jquery-3.0.0.min.js"></script>
     <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
 
-
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
+
+        <link rel="stylesheet" href=" https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
@@ -41,11 +41,18 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li><a href="@Url.Action("Zaznami","Home")">Zaznamy</a></li>
-                    <li><a href="@Url.Action("ZaznamOpravy","Home")">Opravit Zaznamy</a></li>
-                    <li><a href="@Url.Action("DochadzkaMesiac","Home")">Mesačná dochádzka</a></li>
-                    <li><a href="@Url.Action("KontrolaZmien","Home")">Zmeny zaznamov</a></li>
-                    <li><a href="@Url.Action("CreateExcel","Home")">Excel</a></li>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Uctovnicka"))
+                    {
+                        <li><a href="@Url.Action("Zaznami","Home")">Zaznamy</a></li>
+                        <li><a href="@Url.Action("ZaznamOpravy","Home")">Opravit Zaznamy</a></li>
+                        <li><a href="@Url.Action("DochadzkaMesiac","Home")">Mesačná dochádzka</a></li>
+                        if (User.IsInRole("Admin"))
+                        {
+                            <li><a href="@Url.Action("KontrolaZmien","Home")">Zmeny zaznamov</a></li>
+                            <li><a href="@Url.Action("CreateExcel","Home")">Excel</a></li>
+                        }
+                    }
+
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -60,7 +67,8 @@
         </div>
     </nav>
 
-    <div id="ZmenHeslo" title="Zmena Hesla">
+
+    <div id="ZmenHeslo" style="display:none" title="Zmena Hesla">
         @using (Ajax.BeginForm("ZmenaHesla", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "onSuccess" }))
         {
             <div class="col-md-10">
@@ -76,11 +84,12 @@
                     @Html.Label("Kontrola nového hesla")
                     @Html.Password("noveHesloKontrola", null, new { htmlAttributes = new { @class = "form-control" } })
                 </div>
-                <input type="submit" value="Uloz" />
+                <input class="btn btn-success" style="margin-top:5px;width:100px;margin-left:27px" type="submit" value="Uloz" />
 
             </div>
         }
     </div>
+
 
 
 
@@ -93,11 +102,11 @@
         <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"
                 asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery">
         </script>
-        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
@@ -116,7 +125,7 @@
 
 <script>
 
-  
+
     function onSuccess(data) {
         alert(data.nameError);
     }
@@ -140,6 +149,7 @@
         });
 
         $('#UpdateHeslo').click(function () {
+
             $('#ZmenHeslo').dialog("open");
         });
 

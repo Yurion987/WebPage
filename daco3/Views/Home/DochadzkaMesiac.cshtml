@@ -54,7 +54,7 @@
 
     @using (Html.BeginForm("DochadzkaMesiac", null, FormMethod.Get))
     {
-        <div class="col-md-10">
+        <div >
             @Html.Label("Meno")
             @Html.TextBox("menoZamestnanca", null, new { htmlAttributes = new { @class = "form-control" } })
 
@@ -74,7 +74,7 @@
       }, "Mesiac")
             @Html.Label("Rok")
             @Html.TextBox("rokZaznamu", DateTime.Now.Year, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
-            <input type="submit" value="Search" />
+            <input class="btn btn-info" style="margin-bottom:2px" type="submit" value="Search" />
             @if (Model.Any())
             {
                 <h4>Dochádzka za mesiac: @Model.Last().Mesiac</h4>

@@ -19,12 +19,15 @@
     .table td {
         width: 25%;
     }
+    .editor-label {
+    margin: 5px;
+    }
 </style>
 
 
 <div id="table" class="row">
 
-    <input type="button" id="opener" value="Novy Zaznam">
+    <input class="btn btn-primary"  type="button" id="opener" value="Novy Zaznam">
     @grid.GetHtml(tableStyle: "table table-responsive table-bordered table-hover",
                           columns: grid.Columns(
                          grid.Column(columnName: "Meno", header: "Meno"),
@@ -46,7 +49,7 @@
 
 
 
-<div id="dialog-modal" title="Formular">
+<div id="dialog-modal" style="display:none" title="Formular">
     @using (Ajax.BeginForm("NovyZaznam", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "Kontrola" }))
     {
         <div>
@@ -73,7 +76,7 @@
                     @Html.TextBox("zaznamCas", "00:00", new { @class = "casPick" })
                 </div>
 
-                <input id="vytvorNovy" type="submit" value="Uloz" />
+                <input style="margin-top: 10px; width:100px;margin-left:55px" class="btn btn-success" id="vytvorNovy" type="submit" value="Uloz" />
             </fieldset>
         </div>
     }
@@ -170,7 +173,7 @@
             $('#dialog-modal').dialog({
                 resizable: false,
                 autoOpen: false,
-                height: 250,
+                height: 320,
                 width: 250,
                 modal: true,
                 show: {

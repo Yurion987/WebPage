@@ -6,37 +6,46 @@
 @model LoginClass
 
 
+<div id="hiden" style="display:none">
 
-<div style="display:block">
-    @using (Html.BeginForm("Submit", "Login"))
-    {
-        @Html.Label("sadf", "Posledna verzia co existuje");
-        @Html.Label("lblLogin", "Sem napis blbby login");
-        @Html.TextBoxFor(l => l.Meno);
-        <div>
-            @Html.Label("lblHeslo", "Sem napis blbe heslo");
-            @Html.PasswordFor(m => m.Heslo, new { @class = "hovno" });
+    <div class="container">
+        <div class="big-container">
+            <img class="text" src="~/icons/text.svg" />
+            <div class="middle-container" style="display:block">
+                @using (Html.BeginForm("Submit", "Login"))
+                {
+                    <h2>Prihlásenie</h2>
+                    <img class="logo" src="~/icons/logo.png" />
+                  
+                    <div class="login">
+                        @Html.TextBoxFor(l => l.Meno)
+                    </div>
+                    <div class="password">
+                      
+                        @Html.PasswordFor(m => m.Heslo)
+                    </div>
+
+                    <div>
+                        <input type="submit" value="Login" />
+                        <p>@ViewBag.Err</p>
+                    </div>
+
+                }
+            </div>
         </div>
-
-        <div>
-            <input type="submit" value="Login" />
-            <p>@ViewBag.Err</p>
-        </div>
-
-    }
+    </div>
 </div>
 
-<input id="vlakno" type="button" value="vlakno">
-
+<script src="~/Scripts/bootstrap.min.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 <script src="~/Scripts/jquery-3.0.0.min.js"></script>
 <script src="~/Scripts/jquery-3.0.0.js"></script>
 <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
 <script>
-    
     $(document).ready(function () {
-        $('#vlakno').on("click", startUpValk);
+        $('#hiden').show();
     });
-
+  
 
     function startUpValk(event) {
         var serviceURL = '/Login/StartupVlakno';
@@ -52,12 +61,58 @@
 
 </script>
 
-
 <style>
-    .hovno {
-        height: 50px;
+
+    .big-container {
+        margin-top: 5%;
+        margin-left: 20%;
+        width: 60%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    h2 {
+        margin-top: 50px;
+        margin-bottom: 30px;
+        font-family: "Times New Roman";
+    }
+
+    .middle-container {
+        width: 45%;
+        display: block;
+        background: linear-gradient(to bottom, rgba(241,231,103,1) 0%, rgba(251,185,0,1) 51%, rgba(251,185,0,1) 100%);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
         border-radius: 25px;
-        width: 250px;
-        background-color: red;
+        box-shadow: 0 10px 16px 0 rgba(0,0,0,0.4),0 6px 20px 0 rgba(0,0,0,0.19);
+    }
+
+    .logo {
+        width: 45%;
+        margin-bottom: 20px;
+    }
+
+    input {
+        margin-bottom: 20px;
+        width: 80%;
+        border-radius: 25px;
+        padding: 0px 15px;
+        box-shadow: 0 10px 16px 0 rgba(0,0,0,0.4),0 6px 20px 0 rgba(0,0,0,0.19);
+    }
+
+        input[type=submit] {
+            margin-bottom: 15%;
+            background-color: black;
+            color: white;
+            border: 0px;
+            padding: 5px;
+        }
+
+    body {
+        background-image: url("../../icons/dark.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
     }
 </style>

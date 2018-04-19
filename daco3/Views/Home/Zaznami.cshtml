@@ -32,6 +32,8 @@
             .table-pager > td > a:hover {
                 background-color: #f0f0f0;
    }
+  
+
 </style>
 
 
@@ -39,14 +41,22 @@
     <div id="table">
         @using (Html.BeginForm("Zaznami", null, FormMethod.Get))
         {
-        <div class="col-md-10">
-            @Html.Label("Meno")
-            @Html.TextBox("userName", null, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.Label("Datum od kedy")
-            @Html.TextBox("zaznamCasOd", "", new { @readonly = "readonly", @class = "datumPick" })
-            @Html.Label("Datum do kedy")
-            @Html.TextBox("zaznamCasDo", DateTime.Now.Date.ToString("dd.MM.yyyy"), new { @readonly = "readonly", @class = "datumPick" })
-            <input id="butSubmit" type="submit" value="Hladaj" />
+        <div >
+           
+                @Html.Label("Meno")
+                @Html.TextBox("userName", null, new { htmlAttributes = new { @class = "form-control" } })
+                
+                    @Html.Label("Datum od kedy")
+                    @Html.TextBox("zaznamCasOd", "", new { @readonly = "readonly", @class = "datumPick" })
+               
+                    @Html.Label("Datum do kedy")
+                    @Html.TextBox("zaznamCasDo", DateTime.Now.Date.ToString("dd.MM.yyyy"), new { @readonly = "readonly", @class = "datumPick" })
+               
+                    <input  class="btn btn-info" style="margin-bottom:2px" id="butSubmit" type="submit" value="Hladaj" />
+                
+             
+
+
 
         </div>
 }
@@ -61,7 +71,7 @@
                                                        grid.Column(columnName: "Meno", header: "Meno"),
                                                        grid.Column(columnName: "Datum", header: "Datum"),
                                                        grid.Column(header: "Odpracovane", format: @<text> @item.Odpracovane </text>),
-                                                   grid.Column(header: "Dochadzka", format: @<text> @if (item.Odpracovane == "0")
+                                                   grid.Column(header: "Dochadzka(prichod-odchod)", format: @<text> @if (item.Odpracovane == "0")
                                                    {<div> @Html.ActionLink((string)item.SkratDoch, "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null)</div>}
                                                    else
                                                    {<div> @item.SkratDoch </div>} </text>)

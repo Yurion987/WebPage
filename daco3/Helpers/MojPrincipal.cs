@@ -19,12 +19,11 @@ namespace daco3.Helpers
 
         public bool IsInRole(string role)
         {
-           
-            switch (role) {
-                case "Admin":return Uzivatel.RolaId == 1;
-                case "Uzivatel": return Uzivatel.RolaId == 2;
+            if (Uzivatel.Rola.Nazov==role) {
+                return true;
             }
             return false;
+         
         }
     }
 }

@@ -3,6 +3,7 @@ using daco3.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -33,7 +34,7 @@ namespace daco3
             
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("sk-SK");
             Thread t = new Thread(zbierajData);
             Trace.TraceInformation("Starting thread");
             t.Start();
@@ -58,9 +59,19 @@ namespace daco3
             {
                 if (Request.Url.AbsolutePath.Contains("Home"))
                 {
-                    // redirect to unauthorize
+                    var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
+                     Response.Redirect(urlHelper.Action("Index","Login"));
                 }
             }
         }
+        protected void Application_EndRequest()
+        {
+            var context = new HttpContextWrapper(Context);
+            if (context.Response.StatusCode == 401)
+            {
+                context.Response.Redirect("~/Login/Index");
+            }
+        }
+
     }
 }

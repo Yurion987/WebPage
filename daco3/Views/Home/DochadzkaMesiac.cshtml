@@ -1,18 +1,16 @@
 ﻿@using daco3.Models;
-@using PagedList;
-@using PagedList.Mvc;
 @{
     ViewBag.Title = "DochadzkaMesiac";
     Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
     var grid = new WebGrid(canPage: false, rowsPerPage: 15);
-    grid.Bind(source: Model, rowCount: ViewBag.TotalRowMesacne, autoSortAndPage: false);
+    grid.Bind(source: Model);
 
 }
 
 <link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
 <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
 
-@model IPagedList<GridTabulka>
+@model List<GridTabulka>
 <style>
 
     .ui-datepicker-month {
@@ -74,7 +72,7 @@
       }, "Mesiac")
             @Html.Label("Rok")
             @Html.TextBox("rokZaznamu", DateTime.Now.Year, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control" } })
-            <input class="btn btn-info" style="margin-bottom:2px" type="submit" value="Search" />
+            <input class="btn btn-info" style="margin-bottom:2px" type="submit" value="Hľadaj" />
             @if (Model.Any())
             {
                 <h4>Dochádzka za mesiac: @Model.Last().Mesiac</h4>
@@ -87,19 +85,18 @@
                rowStyle: "table-row-clickable",
                footerStyle: "table-pager",
                tableStyle: "table table-responsive table-bordered table-hover",
-                                                           columns: grid.Columns(
-                                                                                 grid.Column(header: "Meno", format: @<text> <div>@item.Meno</div>  </text>),
-                                                                                                                             grid.Column(header: "Odpracovane", format: @<text> @if (item.Odpracovane == "Nekompletná dochádzka nutnosť opravy")
-                                                                                                                                            {
-                                                                                                                                    <div> @Html.ActionLink((string)item.Odpracovane, "ZaznamOpravy", "Home", new { userName = item.Meno }, null)</div>
-                                                                                                                                            }
-                                                                                                                                            else
-                                                                                                                                            { <div>@item.Odpracovane</div>}</text>))
-                                                                                                                                                                       )
+               columns: grid.Columns(
+                        grid.Column(header: "Meno", format: @<text> <div>@item.Meno</div>  </text>),
+                        grid.Column(header: "Odpracované", format: @<text> @if (item.Odpracovane == "Nekompletná dochádzka nutnosť opravy")
+                        {
+                           <div> @Html.ActionLink((string)item.Odpracovane, "ZaznamOpravy", "Home", new { userName = item.Meno }, null)</div>
+                        }
+                        else
+                         { 
+                            <div>@item.Odpracovane</div>
+                        }</text>))
+                   )
 </div>
-
-
-
 
 @section scripts{
     <script src="~/Scripts/jquery.jeditable.datepicker.js"></script>

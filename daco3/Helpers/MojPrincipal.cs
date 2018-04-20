@@ -1,9 +1,6 @@
 ﻿using daco3.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Principal;
-using System.Web;
+
 
 namespace daco3.Helpers
 {
@@ -11,7 +8,7 @@ namespace daco3.Helpers
     {
         public MojPrincipal(Uzivatel uzivatel)
         {
-            this.Uzivatel = uzivatel;
+            Uzivatel = uzivatel;
         }
 
         public Uzivatel Uzivatel { get; set; }

@@ -12,7 +12,7 @@
         <div class="big-container">
             <img class="text" src="~/icons/text.svg" />
             <div class="middle-container" style="display:block">
-                @using (Html.BeginForm("Submit", "Login"))
+                @using (Html.BeginForm("Login", "Login"))
                 {
                     <h2>Prihlásenie</h2>
                     <img class="logo" src="~/icons/logo.png" />
@@ -45,19 +45,7 @@
     $(document).ready(function () {
         $('#hiden').show();
     });
-  
-
-    function startUpValk(event) {
-        var serviceURL = '/Login/StartupVlakno';
-        $.ajax({
-            type: "POST",
-            url: serviceURL,
-            success: function (data) {
-                if (data == "ok")
-                    console.log("fasa");
-            },
-        });
-    }
+ 
 
 </script>
 

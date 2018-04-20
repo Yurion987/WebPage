@@ -29,24 +29,17 @@ namespace daco3.Controllers
 
         public ActionResult Index()
         {
-          
-        
             var loginData = new LoginClass();
             ViewBag.Err = "";
             return View(loginData);
         }
-
-        public ActionResult Submit(LoginClass model)
+        public ActionResult Login(LoginClass model)
         {
-
             var heslo = Hash.ZaHashuj(model.Heslo);
-            var user = db.Uzivatelia.FirstOrDefault(u => u.Username == model.Meno
-            && heslo == u.Heslo);
-
+            var user = db.Uzivatelia.FirstOrDefault(u => u.Username == model.Meno && heslo == u.Heslo);
             if (user != null)
             {
                 string userData = Newtonsoft.Json.JsonConvert.SerializeObject(user);
-
                 FormsAuthenticationTicket authTicket = new FormsAuthenticationTicket(
                          1,
                          user.Username,
@@ -58,17 +51,10 @@ namespace daco3.Controllers
                 HttpCookie faCookie = new HttpCookie(FormsAuthentication.FormsCookieName, encTicket);
                 faCookie.Expires = DateTime.Now.AddDays(1);
                 Response.Cookies.Add(faCookie);
-
-
                 return RedirectToAction("Index", "Home");
             }
-            ViewBag.Err = "Zle zadane udaje";
+            ViewBag.Err = "Zle zadané údaje";
             return View("Index", model);
         }
-        public ActionResult StartupVlakno()
-        {
-            return Json("ok",JsonRequestBehavior.AllowGet);
-        }
-        
     }
 }

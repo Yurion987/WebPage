@@ -18,9 +18,7 @@ namespace daco3.Models
         public string Username { get; set; }
         [Required]
         public string Heslo { get; set; }
-
         public int RolaId { get; set; }
-
         [ForeignKey("RolaId")]
         public virtual Rola Rola { get; set; }
     }

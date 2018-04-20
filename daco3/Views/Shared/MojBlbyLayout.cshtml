@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Dochadzkovy System</title>
+    <title>@ViewData["Title"] - Dochádzkový Systém</title>
 
     <script src="~/Scripts/jquery-3.0.0.min.js"></script>
     <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
@@ -43,13 +43,13 @@
                 <ul class="nav navbar-nav">
                     @if (User.IsInRole("Admin") || User.IsInRole("Uctovnicka"))
                     {
-                        <li><a href="@Url.Action("Zaznami","Home")">Zaznamy</a></li>
-                        <li><a href="@Url.Action("ZaznamOpravy","Home")">Opravit Zaznamy</a></li>
+                        <li><a href="@Url.Action("Zaznamy","Home")">Záznamy</a></li>
+                        <li><a href="@Url.Action("ZaznamOpravy","Home")">Opraviť Záznamy</a></li>
                         <li><a href="@Url.Action("DochadzkaMesiac","Home")">Mesačná dochádzka</a></li>
+                        <li><a href="@Url.Action("CreateExcel","Home")">Excel Download</a></li>
                         if (User.IsInRole("Admin"))
                         {
-                            <li><a href="@Url.Action("KontrolaZmien","Home")">Zmeny zaznamov</a></li>
-                            <li><a href="@Url.Action("CreateExcel","Home")">Excel</a></li>
+                            <li><a href="@Url.Action("KontrolaZmien","Home")">Zmeny záznamov</a></li>
                         }
                     }
 
@@ -59,7 +59,7 @@
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#"> <span class="glyphicon glyphicon-user"> @User.Identity.Name</span></a>
                         <ul class="dropdown-menu">
                             <li><a id="UpdateHeslo"><span class="glyphicon glyphicon-cog"> Zmeniť heslo</span></a></li>
-                            <li><a href="@Url.Action("Logout","Home")"><span class="glyphicon glyphicon-log-out"> Odhlasit</span></a></li>
+                            <li><a href="@Url.Action("Logout","Home")"><span class="glyphicon glyphicon-log-out"> Odhlásiť</span></a></li>
                         </ul>
                     </li>
                 </ul>

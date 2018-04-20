@@ -16,8 +16,6 @@ namespace daco3.Models
             : base("name=bakalarkaConnStr")
         {
         }
-
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Uzivatel>()

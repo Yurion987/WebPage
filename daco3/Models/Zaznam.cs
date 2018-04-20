@@ -15,19 +15,13 @@ namespace daco3.Models
     {
         [Key]
         public long ZaznamId { get; set; }
-
         public string ZaznamIdWeb { get; set; }
-
         [Required]
         public DateTime Cas { get; set; }
-
-        
         public int UzivatelId { get; set; }
-
         [Required]
         [StringLength(1)]
         public string Typ { get; set; }
-
         [ForeignKey("UzivatelId")]
         public virtual Uzivatel Uzivatel { get; set; }
     }

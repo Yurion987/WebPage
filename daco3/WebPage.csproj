@@ -287,7 +287,6 @@
     </Compile>
     <Compile Include="Helpers\Hash.cs" />
     <Compile Include="Helpers\MojPrincipal.cs" />
-    <Compile Include="Helpers\User.cs" />
     <Compile Include="Migrations\201803311943178_Prva.cs" />
     <Compile Include="Migrations\201803311943178_Prva.Designer.cs">
       <DependentUpon>201803311943178_Prva.cs</DependentUpon>
@@ -299,6 +298,10 @@
     <Compile Include="Migrations\201804081623106_heloZmena.cs" />
     <Compile Include="Migrations\201804081623106_heloZmena.Designer.cs">
       <DependentUpon>201804081623106_heloZmena.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804201230024_oprava.cs" />
+    <Compile Include="Migrations\201804201230024_oprava.Designer.cs">
+      <DependentUpon>201804201230024_oprava.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Databaza.cs" />
@@ -327,7 +330,7 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
-    <Content Include="Views\Home\Zaznami.cshtml" />
+    <Content Include="Views\Home\Zaznamy.cshtml" />
     <Content Include="Views\Home\ZaznamPodrobne.cshtml" />
     <Content Include="Views\Home\ZaznamOpravy.cshtml" />
     <Content Include="Views\Home\DochadzkaMesiac.cshtml" />
@@ -357,6 +360,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804081623106_heloZmena.resx">
       <DependentUpon>201804081623106_heloZmena.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804201230024_oprava.resx">
+      <DependentUpon>201804201230024_oprava.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

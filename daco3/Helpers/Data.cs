@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
 using System.Net;
@@ -10,24 +9,19 @@ using daco3.Models;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
-using System.Security.Cryptography;
 
 namespace daco3.Helpers
 {
-
     class LoadData
     {
-        
         private CookieContainer cookies = new CookieContainer();
-       
         public LoadData()
         {
            
         }
-
         public void WebParsing()
         {
-            System.Diagnostics.Trace.TraceInformation("web Parsing started");
+            Trace.TraceInformation("web Parsing started");
             string loginPageReq = "https://www.jablonet.net/ajax/login.php";
             string dataPageReq = "https://www.jablonet.net/app/ja100?service=257168";
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(loginPageReq);
@@ -52,12 +46,12 @@ namespace daco3.Helpers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("Nepresiel Logom",ex);
+                Trace.TraceError("Nepresiel Logom",ex);
             }
-            System.Diagnostics.Trace.TraceInformation("Nalogoval sa");
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(dataPageReq);
-            request.CookieContainer = cookies;
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            Trace.TraceInformation("Nalogoval sa");
+            HttpWebRequest requestDataPage = (HttpWebRequest)WebRequest.Create(dataPageReq);
+            requestDataPage.CookieContainer = cookies;
+            HttpWebResponse response = (HttpWebResponse)requestDataPage.GetResponse();
             var webPage = new HtmlDocument();
             if (response.StatusCode == HttpStatusCode.OK)
             {
@@ -197,8 +191,6 @@ namespace daco3.Helpers
             }
             return celyDatum;
         }
-
-    
     }
     public class CookieAwareWebClient : WebClient
     {

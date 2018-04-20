@@ -2,23 +2,14 @@
 using daco3.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Linq.Dynamic;
-using System.Web;
-using System.Web.Helpers;
 using System.Web.Mvc;
 using PagedList;
-using PagedList.Mvc;
-using System.Data.Entity.SqlServer;
-using System.Data.SqlClient;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Threading;
 using System.Globalization;
 using System.Web.Security;
-using System.Threading.Tasks;
 using OfficeOpenXml;
 using System.Windows.Forms;
 using System.IO;
@@ -48,52 +39,50 @@ namespace daco3.Controllers
             return View(tab);
         }
         [Authorize(Roles = "Admin,Uctovnicka")]
-        public ActionResult Zaznami(int? page, string sort = "Cas", string sortdir = "desc", string userName = "", string zaznamCasOd = "", string zaznamCasDo = "")
+        public ActionResult Zaznamy(int? page, string sort = "Cas", string sortdir = "desc", string userName = "", string zaznamCasOd = "", string zaznamCasDo = "")
         {
           
             if (sort.Equals("Datum")) sort = "Cas";
             if (sort.Equals("Meno")) sort = "Uzivatel.Username";
             var skip = page.HasValue ? page.Value - 1 : 0;
-            var list = db.Zaznami.OrderBy($"{sort} {sortdir}")
+            var vsetkyZaznami = db.Zaznami.OrderBy($"{sort} {sortdir}")
              .Select(c => new TabulkaZaznami { Cas = c.Cas, UserName = c.Uzivatel.Username, ZaznamId = c.ZaznamId, UzivatelId = c.UzivatelId }).ToList();
-            var reduced = new List<TabulkaZaznami>();
+            var dennaDochadzka = new List<TabulkaZaznami>();
 
             if (userName != "")
             {
-                list = list = list.Where(x => x.UserName == userName).ToList();
+                vsetkyZaznami = vsetkyZaznami.Where(x => x.UserName.ToLower().Contains(userName.ToLower())).ToList();
             }
             if (zaznamCasOd != "")
             {
                 DateTime Od = DateTime.Parse(zaznamCasOd);
-                list = list.Where(x => x.Cas.Date >= Od.Date).ToList();
+                vsetkyZaznami = vsetkyZaznami.Where(x => x.Cas.Date >= Od.Date).ToList();
             }
             if (zaznamCasDo != "")
             {
                 DateTime Do = DateTime.Parse(zaznamCasDo);
-                list = list.Where(x => x.Cas.Date <= Do.Date).ToList();
+                vsetkyZaznami = vsetkyZaznami.Where(x => x.Cas.Date <= Do.Date).ToList();
             }
 
-            list.ForEach(z =>
+            vsetkyZaznami.ForEach(z =>
             {
-                if (!reduced.Any(r => r.UserName == z.UserName && r.Cas.Date == z.Cas.Date))
-                    reduced.Add(z);
+                if (!dennaDochadzka.Any(r => r.UserName == z.UserName && r.Cas.Date == z.Cas.Date))
+                    dennaDochadzka.Add(z);
 
             });
 
             List<GridTabulka> gt = new List<GridTabulka>();
-            foreach (var item in reduced)
+            foreach (var item in dennaDochadzka)
             {
-
                 var denZam = db.Zaznami.Where(z => z.UzivatelId == item.UzivatelId).ToList().Where(x => x.Cas.ToString("dd.MM.yyyy").Equals(item.Cas.ToString("dd.MM.yyyy"))).ToList();
-                var sumaCasu = odpracovanyCas(denZam);
-                var dochString = formatDoch(denZam);
+                var sumaCasu = OdpracovanyCas(denZam);
+                var dochString = FormatDoch(denZam);
                 gt.Add(new GridTabulka(item.Cas, item.UserName, item.ZaznamId, sumaCasu, dochString));
             }
 
-            ViewBag.TotalRow = gt.Count;
             return View(gt);
         }
-        private string odpracovanyCas(List<Zaznam> den)
+        private string OdpracovanyCas(List<Zaznam> den)
         {
             var odchod = den.Where(x => x.Typ == "O").OrderBy(z => z.Cas).ToList();
             var prichod = den.Where(x => x.Typ == "P").OrderBy(z => z.Cas).ToList();
@@ -116,7 +105,7 @@ namespace daco3.Controllers
             }
 
         }
-        private string formatDoch(List<Zaznam> den)
+        private string FormatDoch(List<Zaznam> den)
         {
             string format = "";
             foreach (var item in den)
@@ -137,7 +126,6 @@ namespace daco3.Controllers
         [Authorize(Roles = "Admin,Uctovnicka")]
         public ActionResult ZaznamPodrobne(int? id)
         {
-
             var zaznam = db.Zaznami.Where(x => x.ZaznamId == id).FirstOrDefault();
             if (zaznam != null)
             {
@@ -149,11 +137,11 @@ namespace daco3.Controllers
                 }
                 ViewBag.TotalRowSingleDay = gt.Count;
                 return View(gt);
-            }
+            } 
             return RedirectToAction("ZaznamOpravy", "Home");
         }
         [HttpPost]
-        public ActionResult save(long id, string propertyName, string value)
+        public ActionResult Save(long id, string propertyName, string value)
         {
          
             var status = false;
@@ -240,7 +228,6 @@ namespace daco3.Controllers
             else
             {
                 var copy = db.Zaznami.Find(zaznamId);
-         
                 var casZaznamu = copy.Cas.ToString("dd.MM.yyyy");
                 var pridanyCas = zaznamCas.ToString("HH:mm");
                 var cas = DateTime.Parse(casZaznamu + " " + pridanyCas, CultureInfo.CurrentCulture);
@@ -269,7 +256,6 @@ namespace daco3.Controllers
         }
         public ActionResult Logout()
         {
-
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Login");
         }
@@ -278,42 +264,39 @@ namespace daco3.Controllers
         {
             if (sort.Equals("Datum") || sort.Equals("Odpracovane")) sort = "Cas";
             if (sort.Equals("Meno")) sort = "Uzivatel.Username";
-            List<TabulkaZaznami> list;
-            List<TabulkaZaznami> reduced;
+            List<TabulkaZaznami> vsetkyZaznami;
+            List<TabulkaZaznami> dnoveZaznami = new List<TabulkaZaznami>();
             if (userName == "")
             {
-                list = db.Zaznami.OrderBy($"{sort} {sortdir}")
+                vsetkyZaznami = db.Zaznami.OrderBy($"{sort} {sortdir}")
                 .Select(c => new TabulkaZaznami { Cas = c.Cas, UserName = c.Uzivatel.Username, ZaznamId = c.ZaznamId, UzivatelId = c.UzivatelId }).ToList();
-                reduced = new List<TabulkaZaznami>();
+               
             }
             else
             {
-                list = db.Zaznami.OrderBy($"{sort} {sortdir}").Where(x => x.Uzivatel.Username == userName)
+                vsetkyZaznami = db.Zaznami.OrderBy($"{sort} {sortdir}").Where(x => x.Uzivatel.Username.ToLower().Contains(userName.ToLower()))
                .Select(c => new TabulkaZaznami { Cas = c.Cas, UserName = c.Uzivatel.Username, ZaznamId = c.ZaznamId, UzivatelId = c.UzivatelId }).ToList();
-                reduced = new List<TabulkaZaznami>();
+                
             }
-
-
-            list.ForEach(z =>
+            vsetkyZaznami.ForEach(z =>
             {
-                if (!reduced.Any(r => r.UserName == z.UserName && r.Cas.Date == z.Cas.Date))
-                    reduced.Add(z);
+                if (!dnoveZaznami.Any(r => r.UserName == z.UserName && r.Cas.Date == z.Cas.Date))
+                    dnoveZaznami.Add(z);
 
             });
 
             List<GridTabulka> gt = new List<GridTabulka>();
-            foreach (var item in reduced)
+            foreach (var item in dnoveZaznami)
             {
 
                 var denZam = db.Zaznami.Where(z => z.UzivatelId == item.UzivatelId).ToList().Where(x => x.Cas.ToString("dd.MM.yyyy").Equals(item.Cas.ToString("dd.MM.yyyy"))).ToList();
-                var sumaCasu = odpracovanyCas(denZam);
+                var sumaCasu = OdpracovanyCas(denZam);
                 if (sumaCasu == "0" || sumaCasu == "Je v Praci")
                 {
                     gt.Add(new GridTabulka(item.Cas, item.UserName, item.ZaznamId, sumaCasu));
                 }
             }
-            var pagedList = gt.ToPagedList(page ?? 1, 15);
-            ViewBag.TotalRow = gt.Count;
+            
             return View(gt);
 
         }
@@ -364,7 +347,6 @@ namespace daco3.Controllers
         [Authorize(Roles = "Admin,Uctovnicka")]
         public ActionResult DochadzkaMesiac(int? page, string menoZamestnanca = "", string mesiac = "", string rokZaznamu = "")
         {
-       
             if (rokZaznamu == "")
             {
                 rokZaznamu = DateTime.Now.Year.ToString();
@@ -375,31 +357,25 @@ namespace daco3.Controllers
             }
             var cisloMesiaca = DateTime.ParseExact(mesiac, "MMMM", CultureInfo.CurrentCulture).Month;
             var cisloRoku = DateTime.ParseExact(rokZaznamu, "yyyy", CultureInfo.CurrentCulture).Year;
-            List<List<Zaznam>> list;
+            List<List<Zaznam>> listMesiacDoch;
             if (menoZamestnanca != "")
             {
-                list = db.Zaznami.Where(x => x.Uzivatel.Username == menoZamestnanca).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
+                listMesiacDoch = db.Zaznami.Where(x => x.Uzivatel.Username.ToLower().Contains(menoZamestnanca.ToLower())).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
             }
             else
             {
-                list = db.Zaznami.Where(x => x.Cas.Month == cisloMesiaca && x.Cas.Year == cisloRoku).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
+                listMesiacDoch = db.Zaznami.Where(x => x.Cas.Month == cisloMesiaca && x.Cas.Year == cisloRoku).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
             }
 
             List<GridTabulka> gt = new List<GridTabulka>();
-            foreach (var item in list)
+            foreach (var item in listMesiacDoch)
             {
-                gt.Add(new GridTabulka(item[0].Uzivatel.Username, mesiac, celkovaDochadzkaZaMesiac(item)));
+                gt.Add(new GridTabulka(item[0].Uzivatel.Username, mesiac, CelkovaDochadzkaZaMesiac(item)));
             }
-
-            var pagedList = gt.ToPagedList(page ?? 1, 15);
-            ViewBag.TotalRowMesacne = pagedList.Count;
-
-            return View(pagedList);
-
-
+            return View(gt);
 
         }
-        public string celkovaDochadzkaZaMesiac(List<Zaznam> mesacnaDoch)
+        public string CelkovaDochadzkaZaMesiac(List<Zaznam> mesacnaDoch)
         {
             var prichody = mesacnaDoch.Where(x => x.Typ == "P").ToList();
             var odchody = mesacnaDoch.Where(x => x.Typ == "O").ToList();
@@ -424,28 +400,35 @@ namespace daco3.Controllers
 
         }
         [Authorize(Roles = "Admin")]
-        public ActionResult KontrolaZmien()
+        public ActionResult KontrolaZmien(int? id)
         {
+            List<GridTabulka> tb = new List<GridTabulka>();
+            if (id == null) return View(tb);
 
-            return View();
+            var zaznam = db.Zaznami.Where(x=> x.ZaznamId==id).ToList();
+            
+            foreach (var item in zaznam)
+            {
+                tb.Add(new GridTabulka(item.Cas, item.Uzivatel.Username, item.Typ,item.ZaznamId));
+            }
+
+            return View(tb);
         }
         public ActionResult LoadData()
         {
-      
-            var data= db.Logy.ToList();
+            var tabulkaLog= db.Logy.ToList();
             List<TabulkaZmien> tabZ = new List<TabulkaZmien>();
-            foreach (var item in data)
+            foreach (var item in tabulkaLog)
             {
                 var zmena = item.StaraHodnota;
                 string stratenaHod = "";
                 if (zmena != null) {
                     stratenaHod = zmena.ToString();
                 }
+                
                 tabZ.Add(new TabulkaZmien { Vykonavatel = item.Uzivatel.Username, Zaznam = item.ZaznamId, Akcia = item.ZmenaTypu,StratenaHodota=stratenaHod });
             }
-        
             return Json(new { data = tabZ }, JsonRequestBehavior.AllowGet);
-
         }
         [HttpPost]
         public ActionResult DeleteData(int id)
@@ -458,8 +441,6 @@ namespace daco3.Controllers
                 db.SaveChanges();
                 success = true;
             }
-            var url = Request.Url.PathAndQuery;
-
             return new JsonResult()
             {
                 Data = new { success = success },
@@ -470,23 +451,13 @@ namespace daco3.Controllers
         public ActionResult CreateExcel()
         {
 
-
             var ulozData = db.Zaznami.Where(x => x.ZaznamId != 0).ToList();
-
             string filePath = Server.MapPath("~") + "\\Excel\\Dochadzka.xlsx";
-
-
-
             FileInfo inf = new FileInfo(filePath);
-
-
             try
             {
                 if (inf.Exists) inf.Delete();
-
-
                 ExcelPackage pck = new ExcelPackage(inf);
-
                 var worksheet = pck.Workbook.Worksheets.Add("Dochadzka");
                 var worksheet2 = pck.Workbook.Worksheets.Add("Mesacna Dochadzka");
                 worksheet.Cells["A1"].Value = "Meno";
@@ -509,16 +480,13 @@ namespace daco3.Controllers
                     worksheet.Cells["E" + row.ToString()].Value = item.Typ == "P" ? "Prichod" : "Odchod";
                     row++;
                 }
-
                 worksheet.Cells["A1:E" + row.ToString()].AutoFitColumns();
                 worksheet.Cells["A1:E1"].AutoFilter = true;
-
                 var cisloRoku = DateTime.ParseExact(DateTime.Now.Year.ToString(), "yyyy", CultureInfo.CurrentCulture).Year;
                 var pocetLudi = db.Uzivatelia.Select(x => x.UzivatelId).ToList();
                 row = 2;
                 for (int i = 1; i < 13; i++)
                 {
-
                     var ulozMesiacData = db.Zaznami.Where(x => x.Cas.Month == i && x.Cas.Year == cisloRoku).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
                     if (ulozMesiacData != null)
                     {
@@ -526,7 +494,7 @@ namespace daco3.Controllers
                         {
                             worksheet2.Cells["A" + row.ToString()].Value = item[0].Uzivatel.Username;
                             worksheet2.Cells["B" + row.ToString()].Value = item[0].Cas.ToString("MMMM");
-                            var doch = celkovaDochadzkaZaMesiac(item);
+                            var doch = CelkovaDochadzkaZaMesiac(item);
                             worksheet2.Cells["C" + row.ToString()].Value = doch == "Nekompletná dochádzka nutnosť opravy" ? "chyba v dochadzke" : doch;
                             row++;
                         }
@@ -536,17 +504,12 @@ namespace daco3.Controllers
                 worksheet2.Cells["A1:B1"].AutoFilter = true;
                 worksheet.View.FreezePanes(2, 1);
                 worksheet2.View.FreezePanes(2, 1);
-
-
                 pck.Save();
             }
             catch (IOException)
             {
                 MessageBox.Show("Subor je otvoreny (Zatvorit subor: " + inf.Name + ")");
             }
-
-
-
             Response.Clear();
             Response.ContentType = "application/octect-stream";
             Response.AppendHeader("content-disposition", "filename=Dochadzka.xlsx");

@@ -1,9 +1,7 @@
 ﻿@using daco3.Models;
-@using PagedList;
-@using PagedList.Mvc;
-@using System.Linq;
+
 @{
-    ViewBag.Title = "Zaznami";
+    ViewBag.Title = "Zaznamy";
     Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
     var grid = new WebGrid(canPage: true, rowsPerPage: 15);
     grid.Bind(source: Model);
@@ -39,25 +37,17 @@
 
 <body>
     <div id="table">
-        @using (Html.BeginForm("Zaznami", null, FormMethod.Get))
+        @using (Html.BeginForm("Zaznamy", null, FormMethod.Get))
         {
         <div >
            
                 @Html.Label("Meno")
                 @Html.TextBox("userName", null, new { htmlAttributes = new { @class = "form-control" } })
-                
-                    @Html.Label("Datum od kedy")
-                    @Html.TextBox("zaznamCasOd", "", new { @readonly = "readonly", @class = "datumPick" })
-               
-                    @Html.Label("Datum do kedy")
-                    @Html.TextBox("zaznamCasDo", DateTime.Now.Date.ToString("dd.MM.yyyy"), new { @readonly = "readonly", @class = "datumPick" })
-               
-                    <input  class="btn btn-info" style="margin-bottom:2px" id="butSubmit" type="submit" value="Hladaj" />
-                
-             
-
-
-
+                @Html.Label("Dátum od kedy")
+                @Html.TextBox("zaznamCasOd", "", new { @readonly = "readonly", @class = "datumPick" })
+                @Html.Label("Dátum do kedy")
+                @Html.TextBox("zaznamCasDo", DateTime.Now.Date.ToString("dd.MM.yyyy"), new { @readonly = "readonly", @class = "datumPick" })
+                <input  class="btn btn-info" style="margin-bottom:2px" id="butSubmit" type="submit" value="Hladaj" />
         </div>
 }
 
@@ -67,22 +57,13 @@
              rowStyle: "table-row-clickable",
              footerStyle: "table-pager",
              tableStyle: "table table-responsive table-bordered table-hover",
-                                  columns: grid.Columns(
-                                                       grid.Column(columnName: "Meno", header: "Meno"),
-                                                       grid.Column(columnName: "Datum", header: "Datum"),
-                                                       grid.Column(header: "Odpracovane", format: @<text> @item.Odpracovane </text>),
-                                                   grid.Column(header: "Dochadzka(prichod-odchod)", format: @<text> @if (item.Odpracovane == "0")
-                                                   {<div> @Html.ActionLink((string)item.SkratDoch, "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null)</div>}
-                                                   else
-                                                   {<div> @item.SkratDoch </div>} </text>)
-
-              ))
-
-
+             columns: grid.Columns(
+             grid.Column(columnName: "Meno", header: "Meno"),
+             grid.Column(columnName: "Datum", header: "Dátum"),
+             grid.Column(header: "Odpracované", format: @<text> @item.Odpracovane </text>),
+             grid.Column(header: "Dochádzka(príchod-odchod)", format: @<text>
+            <div> @Html.ActionLink((string)item.SkratDoch, "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null)</div> </text>)))
     </div>
-
-
-
 
 </body>
 

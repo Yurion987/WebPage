@@ -12,16 +12,10 @@ namespace daco3.Models
     {
         [Key]
         public int LogId { get; set; }
-
-        
         public long ZaznamId { get; set; }
-
-        
         public int UzivatelId { get; set; }
-
         public DateTime? StaraHodnota { get; set; }
         public bool ZmenaTypu { get; set; }
-
         [ForeignKey("UzivatelId")]
         public virtual Uzivatel Uzivatel { get; set; }
         [ForeignKey("ZaznamId")]

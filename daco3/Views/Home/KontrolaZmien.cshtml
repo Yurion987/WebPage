@@ -1,8 +1,9 @@
-﻿
+﻿@using daco3.Models
 @{
     ViewBag.Title = "KontrolaZmien";
     Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
 }
+@model List<GridTabulka>
 <link href="~/Content/jquery-ui-timepicker-addon.min.css" rel="stylesheet" />
 <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
 <style>
@@ -14,22 +15,51 @@
     <table id="tableZmien">
         <thead>
             <tr>
-                <th>Vykonavatel</th>
-                <th>Stratena Hodnota</th>
+                <th>Vykonávateľ</th>
+                <th>Stratená Hodnota</th>
                 <th>Akcia</th>
-                <th>Zaznam</th>
-
+                <th>Záznam</th>
             </tr>
         </thead>
     </table>
 </div>
 
+@if (Model.Any() ) {
+    var grid = new WebGrid(canPage: true, rowsPerPage: 15);
+    grid.Bind(source: Model);
+<div>
+    <h4>Info o Zazname @Model.FirstOrDefault().ZaznamId</h4>
+
+    @grid.GetHtml(
+                  mode: WebGridPagerModes.All,
+                  htmlAttributes: new { id = "ZaznamiGrid" },
+                 rowStyle: "table-row-clickable",
+                 footerStyle: "table-pager",
+                 tableStyle: "table table-responsive table-bordered table-hover",
+                                      columns: grid.Columns(
+                                                           grid.Column(columnName: "Meno", header: "Meno"),
+                                                           grid.Column(columnName: "Datum", header: "Dátum"),
+                                                           grid.Column(columnName: "Cas", header: "Čas"),
+                                                           grid.Column(columnName: "Typ", header: "Typ", format: @<text> 
+                                                                @if (item.Typ == "P")
+                                                                 {
+                                                                    <div>Prichod</div>
+                                                                 }
+                                                                 else
+                                                                 {
+                                                                    <div>Odchod</div>
+                                                                 }
+                                                            </text>)))
+</div>
+    
+
+}
+
+
 <link href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
 
 @section Scripts{
-
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
-
     <script src="~/Scripts/jquery-3.0.0.min.js"></script>
     <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script>
@@ -56,17 +86,16 @@
                         "data": "Zaznam", "name": "Zaznam", "autoWidth": true,
                         "render": function (data, type, row, meta) {
                             if (type === 'display') {
-                                data = '<a href="/Home/ZaznamPodrobne/' + data + '">' + data + '</a>';
+                                data = '<a  href="/Home/KontrolaZmien/' + data + '">' + data + '</a>';
+                               
                             }
-
                             return data;
                         }
                     },
 
                 ]
-            });
+            }); 
         });
-
     </script>
 }
 

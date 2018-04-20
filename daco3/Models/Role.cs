@@ -12,7 +12,6 @@ namespace daco3.Models
     {
         [Key]
         public int RolaId { get; set; }
-
         [Required]
         [StringLength(15)]
         public string Nazov { get; set; }

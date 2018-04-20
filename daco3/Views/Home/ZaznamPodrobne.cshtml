@@ -31,11 +31,11 @@
     @grid.GetHtml(tableStyle: "table table-responsive table-bordered table-hover",
                           columns: grid.Columns(
                          grid.Column(columnName: "Meno", header: "Meno"),
-                         grid.Column(columnName: "Datum", header: "Datum"),
-                         grid.Column(header: "Cas", format: @<text> <div class="editDate" data-id="@item.ZaznamId" data-propertyname="Cas">@item.Cas</div>  </text>),
+                         grid.Column(columnName: "Datum", header: "Dátum"),
+                         grid.Column(header: "Čas", format: @<text> <div class="editDate" data-id="@item.ZaznamId" data-propertyname="Cas">@item.Cas</div>  </text>),
                                  grid.Column(columnName: "Typ", header: "Typ", format: @<text>  @if (item.Typ == "P")
                                                 {
-                                        <div class="edit" data-id="@item.ZaznamId" data-propertyname="Typ">Prichod</div>
+                                        <div class="edit" data-id="@item.ZaznamId" data-propertyname="Typ">Príchod</div>
                                                 }
                                                 else
                                                 {
@@ -49,15 +49,13 @@
 
 
 
-<div id="dialog-modal" style="display:none" title="Formular">
+<div id="dialog-modal" style="display:none" title="Formulár">
     @using (Ajax.BeginForm("NovyZaznam", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "Kontrola" }))
     {
         <div>
-
             <fieldset>
-
-                <h4>Uzivatel: @Model.Last().Meno </h4>
-                <h4>Den: @Model.Last().Datum </h4>
+                <h4>Užívateľ: @Model.Last().Meno </h4>
+                <h4>Deň: @Model.Last().Datum </h4>
 
                 @Html.Hidden("zaznamId", Model.Last().ZaznamId)
                 <div class="editor-label">
@@ -65,9 +63,9 @@
                 </div>
                 <div class="editor-label">
                     @Html.DropDownList("zaznamTyp", new List<SelectListItem> {
-                                                                                new SelectListItem {Text = "Odchod",Value="O" },
-                                                                                new SelectListItem {Text = "Prichod",Value="P" }
-                                                                              }, "Typ dochadzky")
+                                                    new SelectListItem {Text = "Odchod",Value="O" },
+                                                    new SelectListItem {Text = "Príchod",Value="P" }
+                                                    }, "Typ dochádzky")
                 </div>
                 <div class="editor-label">
                     @Html.LabelFor(m => m.Last().Cas)
@@ -113,7 +111,7 @@
             });
             //InLine Editing typ
             var oldValue = '';
-            $('.edit').editable('/home/save', {
+            $('.edit').editable('/home/Save', {
                 cssClass: 'jeditForm',
                 width: 'none',
                 height: 'none',
@@ -141,7 +139,7 @@
                 }
             });
             //inline Editing text
-            $('.editDate').editable('/home/save', {
+            $('.editDate').editable('/home/Save', {
                 cssClass: 'jeditForm',
                 width: 'none',
                 height: 'none',

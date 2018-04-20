@@ -9,10 +9,8 @@ namespace daco3.Models
     {
         public string Datum { get; set; }
         public string Cas { get; set; }
-
         public string Meno { get; set; }
         public long ZaznamId { get; set; }
-
         public string Mesiac { get; set; }
         public string Odpracovane { get; set; }
         public string Typ { get; set; }

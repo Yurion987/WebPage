@@ -214,8 +214,9 @@
 
             });
             $('#ZaznamiGrid > tbody > tr').each(function (index) {
+                
                 if ($(this).children('td:nth-child(5)').text() == "   Systemový Záznam  ") {
-                    $(this).children('td').css("width","100px");
+                    $(this).children('td').css("white-space", "nowrap");
                 }
             }); 
             });

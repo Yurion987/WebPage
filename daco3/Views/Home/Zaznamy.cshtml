@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Zaznamy";
-    Layout = "~/Views/Shared/MojBlbyLayout.cshtml";
+    Layout = "~/Views/Shared/Navbar.cshtml";
     var grid = new WebGrid(canPage: true, rowsPerPage: 15);
     grid.Bind(source: Model);
 }

@@ -178,6 +178,7 @@
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="Global.asax" />
     <Content Include="icons\dark.jpg" />
+    <Content Include="icons\load.gif" />
     <Content Include="icons\logo.png" />
     <Content Include="icons\text.svg" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -318,7 +319,7 @@
     <None Include="packages.config" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
-    <Content Include="Views\Shared\MojBlbyLayout.cshtml" />
+    <Content Include="Views\Shared\Navbar.cshtml" />
     <Content Include="Scripts\jquery-3.0.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.0.0.min.map" />
     <Content Include="Scripts\umd\popper.min.js.map" />

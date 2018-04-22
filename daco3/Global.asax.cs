@@ -67,7 +67,7 @@ namespace daco3
         protected void Application_EndRequest()
         {
             var context = new HttpContextWrapper(Context);
-            if (context.Response.StatusCode == 401)
+            if (context.Response.StatusCode == 401 || context.Response.StatusCode ==404)
             {
                 context.Response.Redirect("~/Login/Index");
             }

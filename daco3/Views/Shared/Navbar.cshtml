@@ -46,7 +46,7 @@
                         <li><a href="@Url.Action("Zaznamy","Home")">Záznamy</a></li>
                         <li><a href="@Url.Action("ZaznamOpravy","Home")">Opraviť Záznamy</a></li>
                         <li><a href="@Url.Action("DochadzkaMesiac","Home")">Mesačná dochádzka</a></li>
-                        <li><a href="@Url.Action("CreateExcel","Home")">Excel Download</a></li>
+                        <li><a  id="Excel" href="@Url.Action("CreateExcel","Home")">Excel Download</a></li>
                         if (User.IsInRole("Admin"))
                         {
                             <li><a href="@Url.Action("KontrolaZmien","Home")">Zmeny záznamov</a></li>
@@ -56,7 +56,7 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"> <span class="glyphicon glyphicon-user"> @User.Identity.Name</span></a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span>Prihlásený: @User.Identity.Name</span></a> 
                         <ul class="dropdown-menu">
                             <li><a id="UpdateHeslo"><span class="glyphicon glyphicon-cog"> Zmeniť heslo</span></a></li>
                             <li><a href="@Url.Action("Logout","Home")"><span class="glyphicon glyphicon-log-out"> Odhlásiť</span></a></li>
@@ -90,11 +90,13 @@
         }
     </div>
 
-
-
+    <div id="ajaxLoaderDiv" style="position:fixed; top:0px; left:0px; z-index:1234; display:none;  height: 100%;width: 100%;background-color:cornsilk">
+        <img  src="@Url.Content("~/icons/load.gif")" alt="Loading..." class="ajax-loader centered" />
+    </div>
 
     <div class="container body-content">
         @RenderBody()
+       
     </div>
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -117,12 +119,20 @@
 
 </body>
 </html>
+<style>
+    .centered {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
 
+
+</style>
 <script src="~/Scripts/jquery.jeditable.datepicker.js"></script>
 <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
 <script src="~/Scripts/jquery-ui-timepicker-addon.min.js"></script>
 <script src="https://www.appelsiini.net/download/jquery.jeditable.js"></script>
-
 <script>
 
 
@@ -130,8 +140,16 @@
         alert(data.nameError);
     }
 
+
     $(document).ready(function () {
 
+        
+        $('#Excel').click(function () {     
+            $('#ajaxLoaderDiv').show();
+            setTimeout(function () {
+                $('#ajaxLoaderDiv').hide();
+            }, 4500);
+        });
         $('#ZmenHeslo').dialog({
             resizable: false,
             autoOpen: false,
@@ -149,7 +167,6 @@
         });
 
         $('#UpdateHeslo').click(function () {
-
             $('#ZmenHeslo').dialog("open");
         });
 

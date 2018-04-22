@@ -13,6 +13,7 @@ using System.Web.Security;
 using OfficeOpenXml;
 using System.Windows.Forms;
 using System.IO;
+using System.Web;
 
 namespace daco3.Controllers
 {
@@ -21,7 +22,6 @@ namespace daco3.Controllers
     public class HomeController : Controller
     {
         private Databaza db { get; set; }
-
         public HomeController()
         {
             db = new Databaza();
@@ -44,7 +44,6 @@ namespace daco3.Controllers
           
             if (sort.Equals("Datum")) sort = "Cas";
             if (sort.Equals("Meno")) sort = "Uzivatel.Username";
-            var skip = page.HasValue ? page.Value - 1 : 0;
             var vsetkyZaznami = db.Zaznami.OrderBy($"{sort} {sortdir}")
              .Select(c => new TabulkaZaznami { Cas = c.Cas, UserName = c.Uzivatel.Username, ZaznamId = c.ZaznamId, UzivatelId = c.UzivatelId }).ToList();
             var dennaDochadzka = new List<TabulkaZaznami>();
@@ -143,11 +142,9 @@ namespace daco3.Controllers
         [HttpPost]
         public ActionResult Save(long id, string propertyName, string value)
         {
-         
             var status = false;
             var message = "";
             string converVal = "";
-            //inling pre Typ
             if (propertyName == "Typ")
             {
                 converVal = value == "P" ? "Prichod" : "Odchod";
@@ -157,9 +154,8 @@ namespace daco3.Controllers
                     var zaznam = db.Zaznami.Where(x => x.ZaznamId == id).FirstOrDefault();
                     if (zaznam != null)
                     {
-
-                        var idPrihlaseneho = db.Uzivatelia.Where(x => x.Username == User.Identity.Name).FirstOrDefault().UzivatelId;
-                        db.Logy.Add(new Log() { UzivatelId = idPrihlaseneho, ZmenaTypu = true, ZaznamId = id });
+                        var prihlaseny = User as MojPrincipal;
+                        db.Logy.Add(new Log() { UzivatelId = prihlaseny.Uzivatel.UzivatelId, ZmenaTypu = true, ZaznamId = id });
                         db.Entry(zaznam).Property(propertyName).CurrentValue = value;
                         db.SaveChanges();
 
@@ -173,11 +169,10 @@ namespace daco3.Controllers
                 }
                 else
                 {
-                    message = "Zle zadana hodnota (len P alebo O)";
+                    message = "Nezadaný typ záznamu(Odchod,Príchod)";
                 }
 
             }
-            //inline pre Cas
             else if(propertyName=="Cas")
             {
                DateTime t ;
@@ -450,7 +445,6 @@ namespace daco3.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult CreateExcel()
         {
-
             var ulozData = db.Zaznami.Where(x => x.ZaznamId != 0).ToList();
             string filePath = Server.MapPath("~") + "\\Excel\\Dochadzka.xlsx";
             FileInfo inf = new FileInfo(filePath);
@@ -515,6 +509,7 @@ namespace daco3.Controllers
             Response.AppendHeader("content-disposition", "filename=Dochadzka.xlsx");
             Response.TransmitFile(filePath);
             Response.End();
+           
             return RedirectToAction("Index","Home");
         }
     }

@@ -28,7 +28,9 @@
 <div id="table" class="row">
 
     <input class="btn btn-primary"  type="button" id="opener" value="Novy Zaznam">
-    @grid.GetHtml(tableStyle: "table table-responsive table-bordered table-hover",
+    @grid.GetHtml(
+       htmlAttributes: new { id = "ZaznamiGrid" },
+    tableStyle: "table table-responsive table-bordered table-hover",
                           columns: grid.Columns(
                          grid.Column(columnName: "Meno", header: "Meno"),
                          grid.Column(columnName: "Datum", header: "Dátum"),
@@ -210,7 +212,12 @@
 
                 });
 
-                });
+            });
+            $('#ZaznamiGrid > tbody > tr').each(function (index) {
+                if ($(this).children('td:nth-child(5)').text() == "   Systemový Záznam  ") {
+                    $(this).children('td').css("width","100px");
+                }
+            }); 
             });
 
     </script>

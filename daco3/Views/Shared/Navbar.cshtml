@@ -138,12 +138,12 @@
 
     function onSuccess(data) {
         alert(data.nameError);
+        if (data.nameError == "Heslo úspešne zmenené") {
+            $('#ZmenHeslo').dialog('close');
+        }
+
     }
-
-
     $(document).ready(function () {
-
-        
         $('#Excel').click(function () {     
             $('#ajaxLoaderDiv').show();
             setTimeout(function () {

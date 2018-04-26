@@ -126,6 +126,9 @@
         left: 50%;
         transform: translate(-50%, -50%);
     }
+    .navbar-fixed-top a:hover {
+        background: linear-gradient(to bottom, rgba(241,231,103,1) 0%, rgba(251,185,0,1) 51%, rgba(251,185,0,1) 100%);
+    }
 
 
 </style>
@@ -159,6 +162,10 @@
             show: {
                 effect: "fold",
                 duration: 500
+            },
+            show:{
+                effect: "explode",
+                duration: 200
             },
             hide: {
                 effect: "explode",

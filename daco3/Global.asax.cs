@@ -21,8 +21,7 @@ namespace daco3
         {
             LoadData d = new LoadData();
             while (true)
-            {
-                
+            {      
                 d.WebParsing();
                 Trace.TraceInformation("Uspavam thread");
                 Thread.Sleep(180000);
@@ -48,19 +47,16 @@ namespace daco3
             if (authCookie != null)
             {
                 FormsAuthenticationTicket authTicket = FormsAuthentication.Decrypt(authCookie.Value);
-
                 Uzivatel serializeModel = Newtonsoft.Json.JsonConvert.DeserializeObject<Uzivatel>(authTicket.UserData);
-
                 MojPrincipal newUser = new MojPrincipal(serializeModel);
-
                 HttpContext.Current.User = newUser;
             }
             else
             {
                 if (Request.Url.AbsolutePath.Contains("Home"))
                 {
-                    var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
-                     Response.Redirect(urlHelper.Action("Index","Login"));
+                    var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);             
+                    Response.Redirect(urlHelper.Action("Index","Login"));
                 }
             }
         }

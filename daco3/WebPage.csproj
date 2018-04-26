@@ -306,11 +306,11 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Databaza.cs" />
-    <Compile Include="Models\GridTabulka.cs" />
+    <Compile Include="Helpers\GridTabulka.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\Role.cs" />
     <Compile Include="Models\Uzivatel.cs" />
-    <Compile Include="ViewModels\LoginClass.cs" />
+    <Compile Include="Helpers\LoginClass.cs" />
     <Compile Include="Models\Zaznam.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

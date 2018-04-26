@@ -85,14 +85,9 @@
                     {
                         "data": "Zaznam", "name": "Zaznam", "autoWidth": true,
                         "render": function (data, type, row, meta) {
-                            if (type === 'display') {
-                                data = '<a  href="/Home/KontrolaZmien/' + data + '">' + data + '</a>';
-                               
-                            }
-                            return data;
+                              return  data = '<a  href="/Home/KontrolaZmien/' + data + '">' + data + '</a>';                               
                         }
                     },
-
                 ]
             }); 
         });

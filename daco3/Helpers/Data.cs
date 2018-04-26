@@ -23,7 +23,6 @@ namespace daco3.Helpers
         {
             Trace.TraceInformation("web Parsing started");
             string loginPageReq = "https://www.jablonet.net/ajax/login.php";
-            string dataPageReq = "https://www.jablonet.net/app/ja100?service=257168";
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(loginPageReq);
             webRequest.CookieContainer = cookies;
             webRequest.Method = "POST";
@@ -33,10 +32,8 @@ namespace daco3.Helpers
             {
                 using (StreamWriter requestWriter = new StreamWriter(webRequest.GetRequestStream()))
                 {
-
                     requestWriter.Write(reqBody);
                     requestWriter.Close();
-
                     using (HttpWebResponse res = (HttpWebResponse)webRequest.GetResponse())
                     {
                         if (res.StatusCode != HttpStatusCode.OK)
@@ -49,10 +46,11 @@ namespace daco3.Helpers
                 Trace.TraceError("Nepresiel Logom",ex);
             }
             Trace.TraceInformation("Nalogoval sa");
+            string dataPageReq = "https://www.jablonet.net/app/ja100?service=257168";
             HttpWebRequest requestDataPage = (HttpWebRequest)WebRequest.Create(dataPageReq);
             requestDataPage.CookieContainer = cookies;
             HttpWebResponse response = (HttpWebResponse)requestDataPage.GetResponse();
-            var webPage = new HtmlDocument();
+            var webPage = new HtmlDocument(); 
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 Stream receiveStream = response.GetResponseStream();
@@ -95,7 +93,6 @@ namespace daco3.Helpers
                     
                     if (db.Uzivatelia.Where(u => u.Username == meno).FirstOrDefault() == null)
                     {
-
                         db.Uzivatelia.Add(new Uzivatel() { Heslo =Hash.ZaHashuj("heslo"), Username = meno, RolaId = 2});
                         db.SaveChanges();
                     }

@@ -28,8 +28,8 @@ namespace daco3.Controllers
         }
         public ActionResult Index()
         {
-
-            var celaDoch = db.Zaznami.Where(x => x.Uzivatel.Username == User.Identity.Name).ToList();
+            var prihlaseny = User as MojPrincipal;
+            var celaDoch = db.Zaznami.Where(x => x.UzivatelId == prihlaseny.Uzivatel.UzivatelId).OrderByDescending(x=> x.Cas).ToList();
             List<GridTabulka> tab = new List<GridTabulka>();
             foreach (var item in celaDoch)
             {
@@ -181,10 +181,8 @@ namespace daco3.Controllers
                     var zaznam = db.Zaznami.Where(x => x.ZaznamId == id).FirstOrDefault();
                     if (zaznam != null)
                     {
-
-                        var idPrihlaseneho = db.Uzivatelia.Where(x => x.Username == User.Identity.Name).FirstOrDefault().UzivatelId;
-                        db.Logy.Add(new Log() { UzivatelId = idPrihlaseneho, ZmenaTypu = false, ZaznamId = id,StaraHodnota=zaznam.Cas});
-
+                        var prihlaseny = User as MojPrincipal;
+                        db.Logy.Add(new Log() { UzivatelId = prihlaseny.Uzivatel.UzivatelId, ZmenaTypu = false, ZaznamId = id,StaraHodnota=zaznam.Cas});
                         string novyDatum = zaznam.Cas.ToString("dd.MM.yyyy")+" "+t.ToString("HH:mm");
                         DateTime updateCas = DateTime.Parse(novyDatum, CultureInfo.CurrentCulture);
                         converVal = t.ToString("HH:mm");
@@ -355,11 +353,17 @@ namespace daco3.Controllers
             List<List<Zaznam>> listMesiacDoch;
             if (menoZamestnanca != "")
             {
-                listMesiacDoch = db.Zaznami.Where(x => x.Uzivatel.Username.ToLower().Contains(menoZamestnanca.ToLower())).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
+                listMesiacDoch = db.Zaznami.Where(x => x.Uzivatel.Username.ToLower().Contains(menoZamestnanca.ToLower()))
+                    .GroupBy(x => x.Uzivatel.Username)
+                    .Select(x => x.ToList())
+                    .ToList();
             }
             else
             {
-                listMesiacDoch = db.Zaznami.Where(x => x.Cas.Month == cisloMesiaca && x.Cas.Year == cisloRoku).GroupBy(x => x.Uzivatel.Username).Select(x => x.ToList()).ToList();
+                listMesiacDoch = db.Zaznami.Where(x => x.Cas.Month == cisloMesiaca && x.Cas.Year == cisloRoku)
+                    .GroupBy(x => x.Uzivatel.Username)
+                    .Select(x => x.ToList())
+                    .ToList();
             }
 
             List<GridTabulka> gt = new List<GridTabulka>();
@@ -399,14 +403,11 @@ namespace daco3.Controllers
         {
             List<GridTabulka> tb = new List<GridTabulka>();
             if (id == null) return View(tb);
-
             var zaznam = db.Zaznami.Where(x=> x.ZaznamId==id).ToList();
-            
             foreach (var item in zaznam)
             {
                 tb.Add(new GridTabulka(item.Cas, item.Uzivatel.Username, item.Typ,item.ZaznamId));
             }
-
             return View(tb);
         }
         public ActionResult LoadData()
@@ -420,8 +421,10 @@ namespace daco3.Controllers
                 if (zmena != null) {
                     stratenaHod = zmena.ToString();
                 }
-                
-                tabZ.Add(new TabulkaZmien { Vykonavatel = item.Uzivatel.Username, Zaznam = item.ZaznamId, Akcia = item.ZmenaTypu,StratenaHodota=stratenaHod });
+                tabZ.Add(new TabulkaZmien { Vykonavatel = item.Uzivatel.Username,
+                    Zaznam = item.ZaznamId,
+                    Akcia = item.ZmenaTypu,
+                    StratenaHodota =stratenaHod });
             }
             return Json(new { data = tabZ }, JsonRequestBehavior.AllowGet);
         }

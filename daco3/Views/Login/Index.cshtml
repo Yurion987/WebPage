@@ -16,18 +16,17 @@
                 {
                     <h2>Prihlásenie</h2>
                     <img class="logo" src="~/icons/logo.png" />
-                  
+
                     <div class="login">
-                        @Html.TextBoxFor(l => l.Meno)
+                        @Html.TextBoxFor(l => l.Meno, htmlAttributes: new { placeholder = "Meno" })
                     </div>
                     <div class="password">
-                      
-                        @Html.PasswordFor(m => m.Heslo)
+                        @Html.PasswordFor(m => m.Heslo, htmlAttributes: new { placeholder = "Heslo" })
                     </div>
 
                     <div>
-                        <input type="submit" value="Login" />
-                        <p>@ViewBag.Err</p>
+                        <input type="submit" value="Prihlásiť" />
+                        <p id="erorText" style="color:red;border:1px solid black;width:50%;margin-left:25%;background-color:antiquewhite;border-radius:25px">@ViewBag.Err</p>
                     </div>
 
                 }
@@ -44,8 +43,15 @@
 <script>
     $(document).ready(function () {
         $('#hiden').show();
+       
+        if ($('#erorText').text() == "") {
+           
+            $('#erorText').css("display", "none");
+        } else {
+            $('#erorText').css("display", "block");
+        }
     });
- 
+
 
 </script>
 

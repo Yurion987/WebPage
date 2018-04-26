@@ -44,7 +44,7 @@
                                         <div class="edit" data-id="@item.ZaznamId" data-propertyname="Typ">Odchod</div>
                                                 }                              
                                 </text>
-                                     ), grid.Column(header: "Delete", format: @<text> @if (item.WebId == null) { <button value="@item.ZaznamId" class="delButton">Delete</button> } else { <div> Systemový Záznam</div>}  </text>,canSort:false)
+                                     ), grid.Column(header: "Delete", format: @<text> @if (item.WebId == null) { <button value="@item.ZaznamId" class="delButton">Delete</button> } else { <div style="white-space:nowrap"> Systemový Záznam</div>}  </text>,canSort:false)
                    )
                                                                                                                                                                                                                                                                                                                                                                                                                           )
 </div>
@@ -213,12 +213,6 @@
                 });
 
             });
-            $('#ZaznamiGrid > tbody > tr').each(function (index) {
-                
-                if ($(this).children('td:nth-child(5)').text() == "   Systemový Záznam  ") {
-                    $(this).children('td').css("white-space", "nowrap");
-                }
-            }); 
             });
 
     </script>

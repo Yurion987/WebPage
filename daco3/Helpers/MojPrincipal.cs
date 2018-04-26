@@ -19,8 +19,7 @@ namespace daco3.Helpers
             if (Uzivatel.Rola.Nazov==role) {
                 return true;
             }
-            return false;
-         
+            return false;   
         }
     }
 }

@@ -449,7 +449,7 @@ namespace daco3.Controllers
         public ActionResult CreateExcel()
         {
             var ulozData = db.Zaznami.Where(x => x.ZaznamId != 0).ToList();
-            string filePath = Server.MapPath("~") + "\\Excel\\Dochadzka.xlsx";
+            var filePath = Path.GetTempFileName();
             FileInfo inf = new FileInfo(filePath);
             try
             {
@@ -507,6 +507,7 @@ namespace daco3.Controllers
             {
                 MessageBox.Show("Subor je otvoreny (Zatvorit subor: " + inf.Name + ")");
             }
+           
             Response.Clear();
             Response.ContentType = "application/octect-stream";
             Response.AppendHeader("content-disposition", "filename=Dochadzka.xlsx");

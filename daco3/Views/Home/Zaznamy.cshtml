@@ -16,6 +16,7 @@
     #table {
         margin-top: 100px;
     }
+
     .table-pager > td {
         padding-top: 10px;
     }
@@ -29,9 +30,7 @@
 
             .table-pager > td > a:hover {
                 background-color: #f0f0f0;
-   }
-  
-
+            }
 </style>
 
 
@@ -39,30 +38,30 @@
     <div id="table">
         @using (Html.BeginForm("Zaznamy", null, FormMethod.Get))
         {
-        <div >
-           
+            <div>
+
                 @Html.Label("Meno")
                 @Html.TextBox("userName", null, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.Label("Dátum od kedy")
                 @Html.TextBox("zaznamCasOd", "", new { @readonly = "readonly", @class = "datumPick" })
                 @Html.Label("Dátum do kedy")
                 @Html.TextBox("zaznamCasDo", DateTime.Now.Date.ToString("dd.MM.yyyy"), new { @readonly = "readonly", @class = "datumPick" })
-                <input  class="btn btn-info" style="margin-bottom:2px" id="butSubmit" type="submit" value="Hladaj" />
-        </div>
-}
+                <input class="btn btn-info" style="margin-bottom:2px" id="butSubmit" type="submit" value="Hladaj" />
+            </div>
+        }
 
         @grid.GetHtml(
-              mode: WebGridPagerModes.All,
-              htmlAttributes: new { id = "ZaznamiGrid"},
-             rowStyle: "table-row-clickable",
-             footerStyle: "table-pager",
-             tableStyle: "table table-responsive table-bordered table-hover",
-             columns: grid.Columns(
-             grid.Column(columnName: "Meno", header: "Meno"),
-             grid.Column(columnName: "Datum", header: "Dátum"),
-             grid.Column(header: "Odpracované", format: @<text> @item.Odpracovane </text>),
-             grid.Column(header: "Dochádzka(príchod-odchod)", format: @<text>
-            <div> @Html.ActionLink((string)item.SkratDoch, "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null)</div> </text>)))
+                                  mode: WebGridPagerModes.All,
+                                  htmlAttributes: new { id = "ZaznamiGrid" },
+                                 rowStyle: "table-row-clickable",
+                                 footerStyle: "table-pager",
+                                 tableStyle: "table table-responsive table-bordered table-hover",
+                                 columns: grid.Columns(
+                                 grid.Column(columnName: "Meno", header: "Meno"),
+                                 grid.Column(columnName: "Datum", header: "Dátum"),
+                                 grid.Column(header: "Odpracované", format: @<text> @item.Odpracovane </text>),
+                                               grid.Column(header: "Dochádzka(príchod-odchod)", format: @<text>
+                                                <div> @Html.ActionLink((string)item.SkratDoch, "ZaznamPodrobne", "Home", new { id = item.ZaznamId }, null)</div> </text>)))
     </div>
 
 </body>
@@ -73,11 +72,11 @@
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
 
     <script>
-      
+
 
 
         $(document).ready(function () {
-           
+
 
             //kalendar styl
             $('.datumPick').datepicker({
@@ -99,7 +98,10 @@
                 if ($(this).children('td:nth-child(3)').text() == " 0 ") {
                     $(this).children('td').css("background-color", "#ffcccc");
                 }
-            }); 
-            });  
+            });
+        });
     </script>
 }
+
+
+

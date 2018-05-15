@@ -29,6 +29,7 @@ namespace daco3.Controllers
 
         public ActionResult Index()
         {
+
             var loginData = new LoginClass();
             ViewBag.Err = "";
             return View(loginData);
